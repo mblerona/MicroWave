@@ -1,0 +1,32 @@
+# Central place for every threshold used across the pipeline, so nothing
+# ends up hardcoded inline in a notebook.
+
+seed: 42
+
+ingest:                      # reading the raw counts CSV and writing Parquet
+  chunksize: 2000
+  dtype: int32
+  row_group_size: 5000
+  parquet_compression: snappy
+  prevalence_filter: 0.01    # taxa_prev01.npz — taxa present in >=1% of samples
+
+qc:                          # sample/cohort filtering
+  depth_threshold: 10000     # default minimum reads per sample
+  depth_sensitivity: [5000, 10000, 20000]   # alternate thresholds for sensitivity checks
+  min_cases_per_project: 10
+  min_controls_per_project: 10
+
+transform:                   # putting counts on a comparable scale
+  clr_pseudocount: 0.5
+  clr_prevalence_filter: 0.01   # CLR only applied to the >=1% prevalence matrix
+
+variance:                    # technical-vs-biological variance partitioning
+  distance_subsample_n: 15000   # project-stratified subsample for dense distance matrices
+  permutations: 999
+
+differential:                # case/control differential abundance testing
+  min_projects_per_category: 2
+  min_cases_per_category: 100
+  fdr_alpha: 0.05
+
+prevalence_tiers: [0.01, 0.10]   # alternate prevalence cutoffs for sensitivity checks

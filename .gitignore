@@ -1,1 +1,11 @@
 Data/
+data/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Planning/analysis docs — kept locally, not tracked
+ANALYSIS_PLAN.md
+IMPLEMENTATION.md
+LABEL_AUDIT.md
+notes/

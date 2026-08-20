@@ -1,0 +1,18 @@
+pandas>=2.0
+pyarrow
+numpy
+scipy
+scikit-learn
+scikit-bio
+statsmodels
+umap-learn
+matplotlib
+seaborn
+pyyaml
+tqdm
+jupyter
+ipykernel
+
+# Optional — only needed if differential abundance testing uses the R
+# implementations (ANCOM-BC / ALDEx2) instead of the Python fallback
+# rpy2
