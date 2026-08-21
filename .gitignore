@@ -9,3 +9,5 @@ ANALYSIS_PLAN.md
 IMPLEMENTATION.md
 LABEL_AUDIT.md
 notes/
+ProgressFiles/
+.venv/
