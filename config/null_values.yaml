@@ -1,0 +1,52 @@
+# Null vocabulary for tags.tsv values.
+#
+# `global` values are stripped as missing-data everywhere.
+# `conditional` values are missing-data EXCEPT in the listed fields, where
+# they are a real value (e.g. "none" in gastrointest_disord means "no
+# gastrointestinal disorder" -- a control, not an absence of data).
+# See ANALYSIS_PLAN.md Section 5 / LABEL_AUDIT.md Section 3.1 for the
+# evidence behind the exemption list.
+
+global:
+  - missing
+  - not provided
+  - not applicable
+  - na
+  - n/a
+  - not collected
+  - unknown
+  - restricted access
+  - ""
+  - not_applicable
+  - not_collected
+  - "#n/b"
+  - "#n/a"
+  - nd
+  - blank
+  - unk
+  - not specified
+  - no data
+  - not reported
+  - labcontrol test
+  - not available          # found profiling collection_date in Phase 1 -- not in the original list
+  - not_available
+
+conditional:
+  none:
+    except:
+      - gastrointest_disord
+      - liver_disord
+      - pulmonary_disord
+      - "lung/pulmonary disorder"
+      - host_disease
+  "no":
+    except:
+      - gastrointest_disord
+      - liver_disord
+      - pulmonary_disord
+      - "lung/pulmonary disorder"
+      - host_disease
+      - ibd   # PRJEB5729's within-study contrast field: "no" = 803 controls
+              # (LABEL_AUDIT.md 5.1b's binary-vocabulary merge), found while
+              # deriving disease_label in Phase 1 -- not a disorder-family
+              # field, but the same "no means a real negative" pattern.

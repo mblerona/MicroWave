@@ -1,0 +1,342 @@
+project,n_samples,amplicon,kit_family,instrument,region,n_controls,n_cases
+PRJDB10485,109,v3-v4,other_or_unspecified,Illumina MiSeq,Sub-Saharan Africa,0,0
+PRJDB10527,91,v3-v4,other_or_unspecified,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJDB10528,314,v3-v4,other_or_unspecified,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJDB10612,72,v3-v4,other_or_unspecified,Illumina MiSeq,unknown,0,0
+PRJDB11894,219,v1-v2,other_or_unspecified,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJDB4360,71,v3-v4,other_or_unspecified,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJDB5316,243,v1-v2,other_or_unspecified,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJDB5564,120,v3-v4,other_or_unspecified,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJDB5678,95,v3-v4,other_or_unspecified,Illumina MiSeq,unknown,0,0
+PRJDB8027,15,v1-v2,other_or_unspecified,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJDB8511,114,v1-v2,manual_extraction,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJDB9239,120,v1-v2,other_or_unspecified,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJDB9469,1003,v1-v2,other_or_unspecified,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJDB9705,50,v1-v2,other_or_unspecified,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJDB9936,347,v1-v2,manual_extraction,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJEB10326,60,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJEB11419,4549,v4,other_or_unspecified,Illumina MiSeq,Europe and Northern America,4231,148
+PRJEB13896,479,v4,manual_extraction,Illumina MiSeq,Europe and Northern America,0,0
+PRJEB15481,271,unknown,manual_extraction,Illumina MiSeq,Europe and Northern America,0,0
+PRJEB15534,127,v4,Qiagen,Illumina MiSeq,Europe and Northern America,56,71
+PRJEB16344,454,unknown,MP_Biomedicals,Illumina MiSeq,Europe and Northern America,0,0
+PRJEB17608,169,unknown,Qiagen,Illumina MiSeq,unknown,0,0
+PRJEB17610,170,v3-v4,Qiagen,Illumina MiSeq,unknown,0,0
+PRJEB17613,170,v4,Qiagen,Illumina MiSeq,unknown,0,0
+PRJEB17860,93,v4,Qiagen,Illumina MiSeq,Central and Southern Asia,0,0
+PRJEB20766,252,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJEB20773,271,v4,Qiagen,Illumina MiSeq,Central and Southern Asia,0,0
+PRJEB21946,293,v4,Qiagen,Illumina MiSeq,Central and Southern Asia,0,0
+PRJEB22676,72,v4,Qiagen,Illumina MiSeq,Europe and Northern America,32,40
+PRJEB23775,170,v4,Qiagen,Illumina MiSeq,unknown,0,0
+PRJEB26012,599,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJEB27068,3499,unknown,other_or_unspecified,Illumina MiSeq,unknown,0,0
+PRJEB27564,260,v3-v4,Stratec,Illumina MiSeq,Europe and Northern America,0,0
+PRJEB27662,262,v4,Qiagen,Illumina MiSeq,unknown,0,0
+PRJEB27868,504,v4,other_or_unspecified,Illumina MiSeq,Sub-Saharan Africa,0,0
+PRJEB27978,50,v4,other_or_unspecified,Illumina MiSeq,Europe and Northern America,0,0
+PRJEB28159,912,unknown,other_or_unspecified,Illumina MiSeq,unknown,0,0
+PRJEB29433,2944,unknown,other_or_unspecified,Illumina MiSeq,unknown,0,0
+PRJEB30292,133,v3,Promega,Illumina MiSeq,unknown,0,0
+PRJEB30401,113,v3-v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJEB30495,59,v1-v2,MP_Biomedicals,Illumina MiSeq,unknown,0,0
+PRJEB31155,63,v3-v4,Qiagen,Illumina MiSeq,unknown,0,0
+PRJEB31354,116,v4,MP_Biomedicals,Illumina MiSeq,unknown,0,0
+PRJEB31775,210,unknown,manual_extraction,Illumina HiSeq 2000,unknown,0,0
+PRJEB32077,274,v4,Zymo,Illumina MiSeq,Sub-Saharan Africa,0,0
+PRJEB32244,110,v3,MP_Biomedicals,Illumina MiSeq,unknown,0,0
+PRJEB32537,60,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJEB32547,267,v4,manual_extraction,Illumina HiSeq 2500,unknown,0,0
+PRJEB33065,246,v4,Qiagen,Illumina MiniSeq,Europe and Northern America,0,0
+PRJEB33268,288,v4,Macherey_Nagel,Illumina HiSeq 2500,Europe and Northern America,0,0
+PRJEB3360,166,unknown,other_or_unspecified,unspecified,Sub-Saharan Africa,0,0
+PRJEB33905,890,v3-v4,Qiagen,Illumina MiSeq,unknown,0,0
+PRJEB35769,349,v3-v4,manual_extraction,Illumina MiSeq,Europe and Northern America,0,0
+PRJEB35994,99,v3-v4,other_or_unspecified,Illumina MiSeq,Europe and Northern America,0,0
+PRJEB36316,100,v4,other_or_unspecified,Illumina NovaSeq 6000,Europe and Northern America,0,0
+PRJEB36385,196,v3-v4,Roche,Illumina MiSeq,Europe and Northern America,0,0
+PRJEB36585,130,v4,Qiagen,Illumina MiSeq,Latin America and the Caribbean,0,0
+PRJEB37289,58,v3-v4,manual_extraction,Illumina MiSeq,unknown,0,0
+PRJEB37553,558,v3-v4,other_or_unspecified,Illumina MiSeq,Europe and Northern America,0,0
+PRJEB37877,642,v4,Qiagen,Illumina MiSeq,Northern Africa and Western Asia,0,0
+PRJEB38457,53,v4,other_or_unspecified,Illumina MiSeq,Europe and Northern America,0,0
+PRJEB38835,224,v1-v2,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJEB38948,2948,v3-v4,Qiagen,Illumina HiSeq 2500,Central and Southern Asia,0,0
+PRJEB39289,269,v3-v4,Roche,Illumina MiSeq,Europe and Northern America,0,0
+PRJEB39382,258,v3,Qiagen,Illumina MiSeq,Northern Africa and Western Asia,74,180
+PRJEB40569,263,v3-v4,Macherey_Nagel,Illumina MiSeq,Europe and Northern America,0,0
+PRJEB40751,303,v4,Qiagen,NextSeq 500,Europe and Northern America,0,0
+PRJEB42155,202,v4,Qiagen,Illumina MiSeq,Europe and Northern America,18,183
+PRJEB42687,78,v4,Qiagen,Illumina MiSeq,Europe and Northern America,42,36
+PRJEB4335,49,v4,Qiagen,unspecified,Europe and Northern America,20,29
+PRJEB43667,414,v3,Qiagen,Illumina HiSeq 2000,Europe and Northern America,0,0
+PRJEB44113,109,v3-v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJEB5482,1533,v4,manual_extraction,Illumina MiSeq,Central and Southern Asia,0,0
+PRJEB5714,48,unknown,Qiagen,unspecified,Sub-Saharan Africa,48,0
+PRJEB6358,518,v4,manual_extraction,Illumina MiSeq,Central and Southern Asia,0,0
+PRJEB6702,525,v4,Qiagen,unspecified,Europe and Northern America,0,0
+PRJEB6705,466,v4,Qiagen,unspecified,Europe and Northern America,0,0
+PRJEB8463,776,unknown,Qiagen,Illumina HiSeq 1500,Europe and Northern America,0,0
+PRJEB9150,211,v4,Qiagen,Illumina HiSeq 2000,Central and Southern Asia,0,0
+PRJNA231909,678,v4,other_or_unspecified,Illumina MiSeq,unknown,0,0
+PRJNA232731,944,unknown,Qiagen,Illumina HiSeq 2000,Europe and Northern America,0,0
+PRJNA246121,84,unknown,Qiagen,Illumina HiSeq 2000,unknown,31,53
+PRJNA275256,60,v4-v5,other_or_unspecified,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJNA279031,50,unknown,MP_Biomedicals,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA279828,160,v4,Qiagen,Illumina MiSeq,Central and Southern Asia,0,0
+PRJNA290926,478,v4,Qiagen,454 GS,Europe and Northern America,120,308
+PRJNA297510,61,v3-v5,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA297793,72,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA306884,152,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA307231,292,v3-v4,other_or_unspecified,Illumina MiSeq,Europe and Northern America,44,248
+PRJNA307992,185,v4,Qiagen,Illumina MiSeq,Europe and Northern America,67,43
+PRJNA308315,80,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA311147,91,v4,Qiagen,Illumina MiSeq,Europe and Northern America,46,45
+PRJNA317290,28,unknown,Stratec,Illumina MiSeq,unknown,0,0
+PRJNA317370,71,v3-v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA318004,355,v4,Qiagen,Illumina MiSeq,Europe and Northern America,79,238
+PRJNA321731,62,v4,Qiagen,Illumina MiSeq,unknown,0,0
+PRJNA323603,183,v4,other_or_unspecified,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA324147,90,v4,Qiagen,Illumina HiSeq 2000,Europe and Northern America,54,36
+PRJNA324452,165,v4-v5,other_or_unspecified,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJNA324825,153,v4,other_or_unspecified,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA325931,106,v4,Qiagen,Illumina MiSeq,Latin America and the Caribbean,0,0
+PRJNA328016,1,v3-v4,Qiagen,454 GS,unknown,0,0
+PRJNA328258,84,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA328987,231,v6,MP_Biomedicals,Illumina HiSeq 2500,Europe and Northern America,0,0
+PRJNA331150,50,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA339264,709,unknown,manual_extraction,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA342173,136,v3-v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA345390,342,v4,MP_Biomedicals,Illumina MiSeq,unknown,0,0
+PRJNA349463,80,v4,other_or_unspecified,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJNA349809,98,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA353587,83,v4,Zymo,Illumina MiSeq,unknown,0,0
+PRJNA354863,59,v3-v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA362366,67,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA362482,58,v3-v4,Qiagen,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJNA368739,531,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA369241,54,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA378749,203,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA382861,263,v3,other_or_unspecified,Illumina MiSeq,Eastern and South-Eastern Asia,26,31
+PRJNA382889,137,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA385551,1214,v4,Qiagen,Illumina MiSeq,unknown,0,0
+PRJNA388132,74,v4,MP_Biomedicals,Illumina MiSeq,unknown,0,0
+PRJNA388263,419,v4,Qiagen,Illumina HiSeq 2000,Europe and Northern America,419,0
+PRJNA389481,84,v3-v4,Promega,Illumina MiSeq,unknown,0,0
+PRJNA390475,51,v1-v2,Roche,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA390646,509,v4,Zymo,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA392012,349,v4,Qiagen,Illumina MiSeq,Sub-Saharan Africa,0,0
+PRJNA394877,417,unknown,other_or_unspecified,Illumina HiSeq 2500,Europe and Northern America,0,0
+PRJNA395034,75,v1-v2,Stratec,Illumina MiSeq,Sub-Saharan Africa,0,0
+PRJNA396815,1995,unknown,Qiagen,Illumina HiSeq 4000,Eastern and South-Eastern Asia,0,0
+PRJNA398089,146,unknown,Qiagen,Illumina MiniSeq,Europe and Northern America,42,104
+PRJNA398187,347,v3-v4,Qiagen,Illumina MiSeq,unknown,0,0
+PRJNA398279,121,v4,Qiagen,Illumina MiSeq,Europe and Northern America,121,0
+PRJNA399246,50,unknown,Qiagen,Illumina MiSeq,Central and Southern Asia,0,0
+PRJNA400325,61,v4,Roche,Illumina MiSeq,Sub-Saharan Africa,0,0
+PRJNA400332,50,v4,Roche,Illumina MiSeq,Sub-Saharan Africa,0,0
+PRJNA413199,446,v4,other_or_unspecified,Illumina MiSeq,Europe and Northern America,70,251
+PRJNA414072,1814,v3-v4,Qiagen,Illumina MiSeq,unknown,0,0
+PRJNA414540,276,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA414683,131,v3-v4,Qiagen,Illumina MiSeq,Australia/New Zealand,0,0
+PRJNA416445,79,v3-v4,Qiagen,Illumina MiSeq,Northern Africa and Western Asia,0,0
+PRJNA417357,1093,v4,other_or_unspecified,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA418903,69,v3,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA419373,100,v3-v4,manual_extraction,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA421286,364,v3-v4,other_or_unspecified,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJNA422134,457,unknown,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA427170,79,v3-v4,other_or_unspecified,454 GS,Europe and Northern America,0,0
+PRJNA427597,171,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA428736,1152,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA430990,282,v3,Qiagen,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJNA431746,240,v1-v2,Roche,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA432222,25,unknown,other_or_unspecified,Illumina HiSeq 2500,unknown,0,0
+PRJNA434046,59,v1,Qiagen,Illumina MiSeq,unknown,0,0
+PRJNA434133,269,v4,Stratec,Illumina MiSeq,Europe and Northern America,132,137
+PRJNA434243,82,v4,Qiagen,454 GS,Europe and Northern America,0,0
+PRJNA434249,224,v6,manual_extraction,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA437504,407,v4-v5,MP_Biomedicals,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJNA445640,144,unknown,Qiagen,Illumina HiSeq 2500,Eastern and South-Eastern Asia,0,0
+PRJNA445932,132,v4,Qiagen,Illumina MiSeq,Northern Africa and Western Asia,77,55
+PRJNA449103,376,v1-v2,MP_Biomedicals,Illumina MiSeq,unknown,0,0
+PRJNA450025,298,v3-v4,Qiagen,Illumina MiSeq,Sub-Saharan Africa,0,0
+PRJNA450340,217,v4,Zymo,Illumina MiSeq,Europe and Northern America,46,167
+PRJNA450540,227,v4,other_or_unspecified,Illumina MiSeq,Northern Africa and Western Asia,0,0
+PRJNA472768,194,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA472812,104,unknown,Qiagen,Illumina MiSeq,unknown,0,0
+PRJNA474717,38,v4,manual_extraction,Illumina MiSeq,unknown,0,0
+PRJNA475599,232,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA476770,69,unknown,other_or_unspecified,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA478781,80,v4,MP_Biomedicals,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJNA480312,132,v3-v4,other_or_unspecified,Illumina MiSeq,unknown,0,0
+PRJNA480547,434,v3-v4,Qiagen,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJNA480711,243,v4,other_or_unspecified,Illumina MiSeq,Europe and Northern America,54,20
+PRJNA481072,232,v1-v2,manual_extraction,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA481243,1133,v4,other_or_unspecified,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA481413,444,v4,Qiagen,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJNA485316,847,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA485797,172,v4,Qiagen,Illumina MiSeq,Europe and Northern America,59,113
+PRJNA486009,176,v4,Qiagen,Illumina MiSeq,Latin America and the Caribbean,0,0
+PRJNA487119,92,v3-v4,MP_Biomedicals,Illumina MiSeq,unknown,0,0
+PRJNA488351,65,v3,Qiagen,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJNA489137,63,unknown,Qiagen,Illumina HiSeq 2500,unknown,0,0
+PRJNA491813,102,unknown,other_or_unspecified,Illumina MiSeq,unknown,0,0
+PRJNA491825,176,v3,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA493625,68,v1-v2,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA495320,166,v4,Qiagen,Illumina MiSeq,Europe and Northern America,153,0
+PRJNA497734,2062,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA509882,149,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA510423,1632,v3-v4,MP_Biomedicals,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA510713,92,v1-v2,Roche,Illumina MiSeq,unknown,0,0
+PRJNA510835,159,v4,Qiagen,Illumina MiSeq,Sub-Saharan Africa,0,0
+PRJNA511474,71,v4,Qiagen,Illumina MiSeq,Europe and Northern America,43,28
+PRJNA515272,304,v3-v4,MP_Biomedicals,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA516932,695,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA517050,52,v3,other_or_unspecified,Illumina HiSeq 2500,Europe and Northern America,0,0
+PRJNA517509,279,v4,other_or_unspecified,Illumina MiSeq,Sub-Saharan Africa,0,0
+PRJNA517572,558,v3-v4,Qiagen,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJNA520899,154,unknown,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA521398,156,v5-v6,Qiagen,Illumina MiSeq,unknown,0,0
+PRJNA525701,45,v4,Qiagen,Illumina MiSeq,unknown,0,0
+PRJNA526906,379,v4,Qiagen,Illumina MiSeq,Europe and Northern America,202,177
+PRJNA527059,65,v3-v4,MP_Biomedicals,Illumina HiSeq 2500,unknown,0,0
+PRJNA528344,442,v4,Qiagen,Illumina MiSeq,Australia/New Zealand,0,0
+PRJNA528813,263,v4,Qiagen,Illumina MiSeq,Australia/New Zealand,0,0
+PRJNA530088,56,v4,Qiagen,Illumina HiSeq 2500,Eastern and South-Eastern Asia,0,0
+PRJNA531279,5,v1-v3,other_or_unspecified,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA531564,59,v3-v4,Qiagen,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJNA531921,38,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA532426,67,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA532731,122,v4-v5,manual_extraction,Illumina HiSeq 2500,Eastern and South-Eastern Asia,0,0
+PRJNA532853,67,v1-v2,Roche,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA533120,81,v4,Qiagen,Illumina MiSeq,Europe and Northern America,41,40
+PRJNA533720,59,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA535518,100,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA540406,49,v3-v4,other_or_unspecified,Illumina MiSeq,Europe and Northern America,49,0
+PRJNA541332,430,unknown,Qiagen,Illumina MiSeq,Latin America and the Caribbean,0,0
+PRJNA544370,340,v4,Qiagen,Illumina MiSeq,unknown,0,0
+PRJNA544527,1162,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA544545,379,v4,Zymo,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA544721,128,v3-v4,MP_Biomedicals,Illumina MiSeq,Eastern and South-Eastern Asia,44,84
+PRJNA545312,3330,unknown,manual_extraction,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA547558,52,v1-v2,MP_Biomedicals,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA547591,564,v4,Stratec,Illumina MiSeq,Sub-Saharan Africa,0,0
+PRJNA548153,2864,v4,other_or_unspecified,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA550519,76,v1-v2,Qiagen,Illumina MiSeq,Europe and Northern America,76,0
+PRJNA552448,117,v4,Qiagen,Illumina MiSeq,unknown,0,0
+PRJNA553646,76,v3,Qiagen,Illumina HiSeq 2500,Eastern and South-Eastern Asia,0,0
+PRJNA554232,707,v4,other_or_unspecified,Illumina MiSeq,Europe and Northern America,566,141
+PRJNA556249,219,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA558158,96,unknown,Qiagen,Illumina HiSeq 2500,Eastern and South-Eastern Asia,0,0
+PRJNA559052,172,unknown,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA559143,585,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA559803,235,v4,Qiagen,Illumina HiSeq 2500,Central and Southern Asia,0,0
+PRJNA559898,62,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA560950,197,v5-v6,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA562529,224,v3-v4,manual_extraction,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA564612,109,v3-v4,other_or_unspecified,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA564636,93,v6,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA573829,122,v3-v4,other_or_unspecified,Illumina MiSeq,unknown,0,0
+PRJNA574565,126,v3-v4,Qiagen,Illumina MiSeq,unknown,0,0
+PRJNA576314,257,v4,Qiagen,Illumina MiSeq,Australia/New Zealand,0,0
+PRJNA576564,207,v3-v4,MP_Biomedicals,Illumina NovaSeq 6000,Eastern and South-Eastern Asia,0,0
+PRJNA577051,499,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA579560,96,unknown,Qiagen,Illumina HiSeq 2500,Eastern and South-Eastern Asia,0,0
+PRJNA589036,166,v4,Qiagen,Illumina MiSeq,Europe and Northern America,84,82
+PRJNA589488,175,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA591924,90,v4,Qiagen,Illumina MiSeq,Europe and Northern America,47,43
+PRJNA593062,354,v4,Qiagen,Illumina HiSeq 2500,unknown,0,0
+PRJNA596889,201,v4,other_or_unspecified,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA598280,424,v4,Qiagen,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJNA600229,222,v3-v4,Qiagen,Illumina MiSeq,Sub-Saharan Africa,0,0
+PRJNA601994,725,v4,Qiagen,Illumina MiSeq,Europe and Northern America,263,462
+PRJNA603980,76,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA603983,325,v4,other_or_unspecified,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA604280,204,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA604466,53,v3,Qiagen,NextSeq 550,unknown,0,0
+PRJNA604825,50,v4,Qiagen,Illumina MiSeq,Central and Southern Asia,0,0
+PRJNA605031,1219,v4,Qiagen,454 GS,Europe and Northern America,0,0
+PRJNA606023,140,v1-v2,Qiagen,Illumina MiSeq,unknown,0,0
+PRJNA606061,70,v3-v4,Macherey_Nagel,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJNA606262,867,v4,other_or_unspecified,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA606654,681,unknown,other_or_unspecified,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJNA607574,3069,unknown,other_or_unspecified,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA609050,60,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA609319,326,v3-v4,Stratec,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA610934,51,v4,Qiagen,Illumina MiSeq,Latin America and the Caribbean,21,30
+PRJNA612042,82,v4,Qiagen,Illumina MiSeq,unknown,0,0
+PRJNA615250,52,v4,Qiagen,Illumina MiSeq,Latin America and the Caribbean,0,0
+PRJNA616703,303,v4,MP_Biomedicals,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA622267,87,v4,Qiagen,Illumina MiSeq,Sub-Saharan Africa,0,0
+PRJNA622517,56,v3-v4,Qiagen,Illumina MiSeq,unknown,55,0
+PRJNA623574,45,unknown,Zymo,Illumina MiSeq,Central and Southern Asia,0,0
+PRJNA623853,363,v3-v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA625181,166,v3-v4,other_or_unspecified,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJNA625750,306,unknown,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA627982,54,v4,other_or_unspecified,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA631001,382,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA631262,73,v4,Qiagen,Illumina MiSeq,Europe and Northern America,49,24
+PRJNA631283,24,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA631883,113,v3-v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA639644,227,unknown,other_or_unspecified,Illumina NovaSeq 6000,unknown,61,166
+PRJNA642894,324,v3-v4,Macherey_Nagel,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA644496,183,v3-v4,Qiagen,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJNA644520,39,unknown,Qiagen,Illumina MiSeq,Europe and Northern America,10,29
+PRJNA644655,577,v4,Qiagen,Illumina HiSeq 3000,Europe and Northern America,0,0
+PRJNA644788,73,v3-v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA645223,313,v3-v4,Qiagen,Illumina MiSeq,Australia/New Zealand,0,0
+PRJNA645635,103,v4,other_or_unspecified,Illumina HiSeq 2000,Eastern and South-Eastern Asia,50,53
+PRJNA646021,92,v3-v4,Qiagen,Illumina HiSeq 2500,Eastern and South-Eastern Asia,0,0
+PRJNA646360,66,v3,other_or_unspecified,NextSeq 500,Europe and Northern America,0,0
+PRJNA647534,99,v3,other_or_unspecified,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJNA648321,416,v3-v4,other_or_unspecified,Illumina MiSeq,Europe and Northern America,198,200
+PRJNA648818,214,v4,manual_extraction,NextSeq 500,Europe and Northern America,0,0
+PRJNA650259,36,v4,Qiagen,Illumina MiSeq,Australia/New Zealand,0,0
+PRJNA657821,1515,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA659589,237,v3,Qiagen,Illumina HiSeq 4000,Eastern and South-Eastern Asia,0,0
+PRJNA661289,200,v3-v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA662100,57,v4,Qiagen,Illumina MiSeq,Europe and Northern America,20,37
+PRJNA663722,63,v3-v4,Qiagen,Illumina MiSeq,Australia/New Zealand,0,0
+PRJNA665123,80,unknown,Qiagen,Illumina NovaSeq 6000,Eastern and South-Eastern Asia,0,0
+PRJNA673102,1842,v1-v2,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA674880,173,v4,manual_extraction,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA675093,69,v4,other_or_unspecified,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA675753,53,v3-v4,Stratec,Illumina MiSeq,unknown,0,0
+PRJNA678695,92,unknown,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA680445,62,v3-v4,manual_extraction,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA685746,3481,v4,Qiagen,Illumina MiSeq,unknown,0,0
+PRJNA686801,371,v1-v2,manual_extraction,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJNA687360,54,v3-v4,other_or_unspecified,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA687633,59,v4,Qiagen,Illumina MiSeq,Europe and Northern America,19,40
+PRJNA688839,90,v4,other_or_unspecified,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA690651,50,v3,Qiagen,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJNA693579,581,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA701368,75,v3-v4,manual_extraction,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA701870,99,v3,Qiagen,Illumina MiSeq,unknown,0,0
+PRJNA703470,110,unknown,other_or_unspecified,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJNA706153,87,v3-v4,manual_extraction,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA708262,258,v4,manual_extraction,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA709129,165,v3-v4,Qiagen,Illumina MiSeq,Eastern and South-Eastern Asia,0,0
+PRJNA715036,262,unknown,Qiagen,NextSeq 550,Europe and Northern America,0,0
+PRJNA715072,366,unknown,manual_extraction,Illumina MiSeq,Europe and Northern America,330,28
+PRJNA715766,239,unknown,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA716437,98,v3-v4,Qiagen,Illumina MiSeq,Australia/New Zealand,0,0
+PRJNA720101,90,v4,Qiagen,Illumina MiSeq,Europe and Northern America,30,60
+PRJNA720325,167,v3-v4,other_or_unspecified,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA721421,411,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA723466,193,v1-v3,other_or_unspecified,Illumina MiSeq,unknown,0,0
+PRJNA724686,78,v3-v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA725388,89,unknown,manual_extraction,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA726866,221,v3-v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA726917,402,v3-v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA727279,1197,v4,other_or_unspecified,Illumina HiSeq 2500,Europe and Northern America,0,0
+PRJNA729439,50,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA729511,3712,v4,Qiagen,454 GS,Europe and Northern America,866,1409
+PRJNA735699,83,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA741048,99,v1-v2,other_or_unspecified,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA742936,167,v3-v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA750230,88,v3-v4,other_or_unspecified,Illumina NovaSeq 6000,Eastern and South-Eastern Asia,0,0
+PRJNA753264,52,v3,MP_Biomedicals,Illumina NovaSeq 6000,Eastern and South-Eastern Asia,0,0
+PRJNA759642,57,v4,Qiagen,Illumina MiSeq,Europe and Northern America,0,0
+PRJNA762195,97,v3-v4,other_or_unspecified,Illumina NovaSeq 6000,Eastern and South-Eastern Asia,0,0
+PRJNA764337,106,unknown,Qiagen,Illumina MiSeq,unknown,0,0

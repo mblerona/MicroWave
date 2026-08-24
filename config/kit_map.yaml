@@ -1,0 +1,27 @@
+# projects.csv.kit (283 distinct free-text strings, IMPLEMENTATION.md Phase 1
+# step 9) -> manufacturer family. Ordered rules, first case-insensitive
+# substring match wins. All QIAamp/PowerSoil/DNeasy/AllPrep/MagAttract
+# spellings collapse to one Qiagen family, since MoBio's kit line was
+# acquired by Qiagen and both brandings appear for the same physical kit.
+rules:
+  - match: ["qiaamp", "qiagen", "powersoil", "powerfecal", "dneasy", "allprep", "magattract", "mobio", "mo bio"]
+    family: Qiagen
+  - match: ["zymo"]
+    family: Zymo
+  - match: ["fastdna", "mp bio", "mpbio", "e.z.n.a"]
+    family: MP_Biomedicals
+  - match: ["norgen"]
+    family: Norgen
+  - match: ["promega"]
+    family: Promega
+  - match: ["invitrogen", "thermo"]
+    family: Thermo_Fisher
+  - match: ["nucleospin", "macherey"]
+    family: Macherey_Nagel
+  - match: ["roche", "magna pure"]
+    family: Roche
+  - match: ["stratec", "psp spin"]
+    family: Stratec
+  - match: ["phenol", "chloroform", "manual", "in-house", "in house", "custom"]
+    family: manual_extraction
+default: other_or_unspecified

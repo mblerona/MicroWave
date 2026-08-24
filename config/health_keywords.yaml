@@ -1,0 +1,156 @@
+# Detection rules for health/disease-status label candidates in tags.tsv.
+# See IMPLEMENTATION.md "Label availability" and Phase 1 step 8 for the spec
+# behind every list here. Kept as data, not code, so it can be reviewed and
+# extended without touching src/profile.py.
+
+# Route (a): generic field-NAME patterns. Case-insensitive substring match
+# against the tag name. "disord" is included separately from "disease" --
+# the MIxS *_disord fields (gastrointest_disord, liver_disord, ...) are the
+# single highest-value miss of every earlier naive "disease|diagnos" pass.
+generic_name_patterns:
+  - disease
+  - diagnos
+  - condition
+  - group
+  - health
+  - status
+  - case
+  - control
+  - cohort
+  - phenotype
+  - disord
+
+# Route (b): abbreviation expansion applied to each project's
+# projects.csv.condition string, then matched against that project's own
+# tag NAMES. Keys are substrings looked for in `condition` (case-insensitive);
+# values are the abbreviation tokens to search for in that project's tags.
+condition_abbreviations:
+  colorectal cancer: [crc]
+  crohn: [cd, ibd]
+  autism: [asd]
+  parkinson: [pd]
+  multiple sclerosis: [ms]
+
+# Route (c): value-vocabulary matching, ignoring the field name entirely.
+# A field is a candidate if its value set intersects both a "control-ish"
+# and a "case-ish" token below (after null handling).
+control_value_tokens:
+  - healthy
+  - control
+  - negative
+  - normal
+  - i do not have this condition
+  - no diagnosed disorders
+
+case_value_tokens:
+  - positive
+  - case
+  - diagnosed by a medical professional
+  - self-diagnosed
+  - diagnosed by an alternative medicine practitioner
+
+# Restrict all three routes to fields with this many distinct non-null
+# values (IMPLEMENTATION.md: 2-25, NOT 2-10 -- that excluded
+# gastrointest_disord at 39 distinct values and host_disease at 142).
+candidate_value_range: [2, 25]
+
+# Negative-test patterns: known false positives that must NEVER appear in
+# the candidate catalogue. See IMPLEMENTATION.md "Reference facts" table
+# and LABEL_AUDIT.md Section 6. Each entry is a (field, project) pair;
+# project == null means "exclude this field name everywhere".
+# Disorder-family fields where "none"/"no" mean a negative diagnosis, not
+# missing data (LABEL_AUDIT.md 3.1). Must match null_values.yaml's
+# `conditional` exemption list exactly -- that file controls what survives
+# nulling, this one says what a surviving value like "none" *means*.
+disorder_family_fields:
+  - gastrointest_disord
+  - liver_disord
+  - pulmonary_disord
+  - "lung/pulmonary disorder"
+  - host_disease
+disorder_family_control_values:
+  - none
+  - "no"
+  - no diagnosed disorders
+
+# American Gut self-report battery (LABEL_AUDIT.md 3.3): 23 fields sharing a
+# four-level diagnostic vocabulary, present almost exclusively in PRJEB11419
+# / PRJEB5729. A self-diagnosis is not treated as a case (LABEL_AUDIT.md
+# 5.1, decided) -- only "diagnosed by a medical professional" counts as
+# `_status`=1; the full ladder survives as `_evidence` for sensitivity use.
+self_report_fields:
+  - ibd
+  - ibs
+  - asd
+  - diabetes
+  - "diabetes type"
+  - sibo
+  - cdiff
+  - thyroid
+  - autoimmune
+  - migraine
+  - acid_reflux
+  - cancer
+  - alzheimers
+  - pku
+  - add_adhd
+  - fungal_overgrowth
+  - skin_condition
+  - cardiovascular_disease
+  - liver_disease
+  - kidney_disease
+  - "lung disease"
+  - epilepsy_or_seizure_disorder
+  - mental_illness
+  - "clinical condition"
+  - "ibd diagnosis"
+  - ibd_diagnosis_refined
+  - gluten
+
+# Excluded from disease_label entirely (LABEL_AUDIT.md 5.1a): alt-medicine
+# diagnoses outnumber professional ones for this field, so its ladder
+# measures practitioner ideology, not patient state.
+self_report_excluded_fields:
+  - fungal_overgrowth
+
+self_report_vocab:
+  "i do not have this condition": 0
+  "self-diagnosed": 1
+  "diagnosed by an alternative medicine practitioner": 2
+  "diagnosed by a medical professional (doctor, physician assistant)": 3
+
+# Four fields also carry a plain binary vocabulary on a different sample
+# subset -- different survey rounds, same column (LABEL_AUDIT.md 5.1b).
+# Maps raw value -> evidence level; merged in before vocab lookup so these
+# ~2,200 controls aren't lost. `null` means "unqualified positive, evidence
+# unknown" -> evidence NA, same treatment as levels 1-2.
+self_report_binary_merge:
+  ibd: {"0": 0, "no": 0}
+  diabetes: {"no": 0}
+  cardiovascular_disease: {"0": 0, "1": null}
+  asd: {"no": 0, "yes": null}
+
+negative_test_patterns:
+  - field: project_name
+    project: null
+    reason: >
+      Study title repeated per sample -- always study-level, matches health
+      words on 4,656 samples / 19 projects, never a per-sample label.
+  - field: sample_name
+    project: PRJEB1799
+    reason: >
+      Household/family member index (.ha/.hb/.hc/.hd), not "healthy control".
+  - field: source_material_id
+    project: PRJNA544527
+    reason: >
+      Coincidental ID prefix -- all 1,168 values are IDs; "cd-" is a site
+      code, not Crohn's disease.
+  - field: host_subject_id
+    project: PRJEB38948
+    reason: >
+      Lab controls (mock communities, PCR blanks) read as people.
+  - field: env_local_scale
+    project: PRJNA516251
+    reason: >
+      Constant study-level text repeated on every row, zero per-sample
+      information.
