@@ -10,3 +10,5 @@ IMPLEMENTATION.md
 LABEL_AUDIT.md
 notes/
 audit/
+ProgressFiles/
+.venv/

@@ -1,0 +1,83 @@
+# Free-text condition/category normalization (IMPLEMENTATION.md Phase 1
+# step 9: projects.csv.condition, 204 distinct strings -> ~30 categories).
+#
+# Rules are ordered; the first case-insensitive substring match wins. Used
+# for two things:
+#   1. `condition_category` on projects.csv (project-level, reporting only).
+#   2. Fallback `disease_category` for a case sample whose label field's own
+#      raw value already IS a clean disease name (the common case -- see
+#      `derive_disease_label` in src/harmonize.py) is preferred over this;
+#      this only fills in when the raw value itself isn't informative.
+#
+# "healthy" is intentionally its own category, not folded into `default`:
+# it describes how the STUDY was pitched, not a per-sample status -- see
+# ANALYSIS_PLAN.md Section 4 on why projects.csv.condition must never be
+# used to assign sample-level labels.
+rules:
+  - match: ["colorectal cancer", "crc", "colorectal carcinoma", "colon cancer"]
+    category: CRC
+  - match: ["crohn", " cd "]
+    category: IBD_CD
+  - match: ["ulcerative colitis"]
+    category: IBD_UC
+  - match: ["inflammatory bowel", " ibd"]
+    category: IBD
+  - match: ["irritable bowel", " ibs"]
+    category: IBS
+  - match: ["parkinson"]
+    category: PD
+  - match: ["autis", " asd"]
+    category: ASD
+  - match: ["type 1 diabetes", "t1d"]
+    category: T1D
+  - match: ["type 2 diabetes", "t2d", "diabetes"]
+    category: T2D
+  - match: ["hiv"]
+    category: HIV
+  - match: ["obes", "overweight"]
+    category: obesity
+  - match: ["clostridium difficile", " cdi", "cdiff", "c. diff"]
+    category: CDI
+  - match: ["necrotizing enterocolitis", " nec"]
+    category: NEC
+  - match: ["gastric cancer"]
+    category: gastric_cancer
+  - match: ["hepatitis"]
+    category: hepatitis
+  - match: ["fatty liver", "nash", "nafld"]
+    category: NAFLD
+  - match: ["liver"]
+    category: liver_disease
+  - match: ["asthma"]
+    category: asthma
+  - match: ["cystic fibrosis"]
+    category: CF
+  - match: ["rheumatoid arthritis"]
+    category: RA
+  - match: ["autoimmune"]
+    category: autoimmune
+  - match: ["kidney"]
+    category: kidney_disease
+  - match: ["malnutrition"]
+    category: malnutrition
+  - match: ["preterm"]
+    category: preterm
+  - match: ["eczema"]
+    category: eczema
+  - match: ["multiple sclerosis"]
+    category: MS
+  - match: ["depression"]
+    category: depression
+  - match: ["cancer", "carcinoma", "neoplas", "adenoma", "tumor"]
+    category: cancer_other
+  - match: ["chemotherapy", "hematopoietic cell transplantation"]
+    category: transplant_oncology
+  - match: ["icu", "critically ill"]
+    category: critical_care
+  - match: ["metabolic syndrome"]
+    category: metabolic_syndrome
+  - match: ["lactose intolerance"]
+    category: lactose_intolerance
+  - match: ["healthy"]
+    category: healthy_only
+default: other

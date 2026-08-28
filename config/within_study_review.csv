@@ -1,0 +1,73 @@
+project,field,bucket,controls,cases,note,study_n
+PRJEB11419,diabetes,CONFIRMED,4510.0,163.0,,4676.0
+PRJNA729511,group,CONFIRMED,909.0,1516.0,,3941.0
+PRJEB5729,ibd,CONFIRMED,803.0,44.0,,847.0
+PRJNA601994,health_state,CONFIRMED,316.0,524.0,,840.0
+PRJNA554232,env_local_scale,CONFIRMED,571.0,146.0,,717.0
+PRJNA715072,NEC,CONFIRMED,477.0,34.0,,511.0
+PRJNA290926,diagnosis,CONFIRMED,122.0,318.0,,490.0
+PRJNA529598,group,CONFIRMED,179.0,262.0,,483.0
+PRJNA350277,gastrointest_disord,CONFIRMED,553.0,73.0,recovered only via none-as-control null exemption,648.0
+PRJNA413199,condition_at_sampling,CONFIRMED,70.0,253.0,,454.0
+PRJNA526906,gastrointest_disord,CONFIRMED,230.0,205.0,,435.0
+PRJNA318004,diagnosis,CONFIRMED,98.0,263.0,,404.0
+PRJNA648321,host_disease,CONFIRMED,204.0,200.0,,404.0
+PRJNA307231,HIV_serostatus,CONFIRMED,57.0,287.0,,344.0
+PRJNA641414,Case_Status,CONFIRMED,206.0,103.0,,309.0
+PRJNA434133,asthma_status,CONFIRMED,135.0,143.0,,278.0
+PRJNA280026,description,CONFIRMED,61.0,207.0,,269.0
+PRJNA382861,host_disease,CONFIRMED,26.0,31.0,,263.0
+PRJNA644520,Cohort,CONFIRMED,73.0,189.0,,262.0
+PRJEB39382,experimental group,CONFIRMED,74.0,180.0,,254.0
+PRJNA480711,Cohort,CONFIRMED,54.0,20.0,,243.0
+PRJNA307992,patient_group,CONFIRMED,85.0,51.0,,230.0
+PRJNA639644,disease,CONFIRMED,61.0,166.0,,227.0
+PRJNA450340,host_disease,CONFIRMED,46.0,167.0,,213.0
+PRJEB42155,diagnosis,CONFIRMED,19.0,193.0,,213.0
+PRJNA485797,host_disease,CONFIRMED,64.0,115.0,,179.0
+PRJNA398089,host_disease,CONFIRMED,45.0,131.0,,176.0
+PRJNA445932,case_control,CONFIRMED,103.0,71.0,,174.0
+PRJNA760529,gastrointest_disord,CONFIRMED,70.0,98.0,,168.0
+PRJNA589036,host_disease,CONFIRMED,84.0,82.0,,166.0
+PRJNA685403,ARDS,CONFIRMED,71.0,62.0,,133.0
+PRJNA544721,isolation_source,CONFIRMED,44.0,84.0,,128.0
+PRJEB15534,lung/pulmonary disorder,CONFIRMED,56.0,71.0,,127.0
+PRJNA645635,isolation_source,CONFIRMED,50.0,53.0,,103.0
+PRJNA720101,host_disease,CONFIRMED,41.0,60.0,,101.0
+PRJNA227062,host_disease,CONFIRMED,42.0,52.0,,94.0
+PRJNA704289,allergic_or_nonallergic,CONFIRMED,26.0,67.0,,93.0
+PRJNA311147,case_control,CONFIRMED,46.0,46.0,,92.0
+PRJNA324147,gastrointest_disord,CONFIRMED,54.0,36.0,,90.0
+PRJNA246121,disease,CONFIRMED,31.0,53.0,,84.0
+PRJNA317429,diagnosis,CONFIRMED,47.0,36.0,,83.0
+PRJNA631262,case,CONFIRMED,55.0,27.0,,82.0
+PRJNA533120,host_disease,CONFIRMED,41.0,41.0,,82.0
+PRJNA736821,Group,CONFIRMED,40.0,39.0,,79.0
+PRJEB42687,asd_numeric,CONFIRMED,42.0,36.0,,78.0
+PRJNA511474,env_local_scale,CONFIRMED,45.0,29.0,,74.0
+PRJEB22676,lung/pulmonary disorder,CONFIRMED,32.0,40.0,,72.0
+PRJNA662100,diabetes_status,CONFIRMED,24.0,47.0,,71.0
+PRJNA687633,Group,CONFIRMED,20.0,42.0,,62.0
+PRJEB4335,hiv,CONFIRMED,22.0,30.0,,52.0
+PRJNA591924,host_disease,CONFIRMED,47.0,43.0,recovered only via none-as-control null exemption,90.0
+PRJNA401981,host_disease,CONFIRMED,40.0,40.0,recovered only via none-as-control null exemption,80.0
+PRJNA610934,host_disease,CONFIRMED,21.0,30.0,recovered only via none-as-control null exemption,51.0
+PRJNA485316,screenPCRresult,COLONISATION,181.0,695.0,carriage of an organism not illness -- pending decision LABEL_AUDIT.md 5.2,
+PRJNA481413,host_Hp-status,COLONISATION,242.0,203.0,carriage of an organism not illness -- pending decision LABEL_AUDIT.md 5.2,
+PRJEB46174,vreswabpositive,COLONISATION,172.0,77.0,carriage of an organism not illness -- pending decision LABEL_AUDIT.md 5.2,
+PRJNA556249,Kp,COLONISATION,210.0,38.0,carriage of an organism not illness -- pending decision LABEL_AUDIT.md 5.2,
+PRJNA428477,cre_status,COLONISATION,99.0,32.0,carriage of an organism not illness -- pending decision LABEL_AUDIT.md 5.2,
+PRJNA541332,bmi_status,NEEDS_CHECK,,,numeric group code (0/1/2) not recoverable from data alone -- LABEL_AUDIT.md 5.3,
+PRJNA721421,host_phenotype,NEEDS_CHECK,,,EDSS disability scale; every participant has MS; no control arm -- LABEL_AUDIT.md 5.4,
+PRJNA342173,Status,NEEDS_CHECK,,,numeric group code (0/1) not recoverable from data alone -- LABEL_AUDIT.md 5.3,
+PRJEB38948,host_subject_id,FALSE_POSITIVE,,,mock communities and PCR negative controls; not people -- LABEL_AUDIT.md 4.4,
+PRJNA450540,host_subject_id,FALSE_POSITIVE,,,every value is patient_noN; no control arm in this field -- LABEL_AUDIT.md 4.4,
+PRJEB5714,disease,HEALTHY_ONLY,50.0,0.0,healthy-only cohort (projects.csv.condition == "healthy" exactly); field is 100% "healthy" after null handling -- Phase 2 healthy_baseline scan,50.0
+PRJNA630848,gastrointest_disord,HEALTHY_ONLY,45.0,0.0,healthy-only cohort; field is 100% "no" (disorder-family control value) after null handling -- Phase 2 healthy_baseline scan,50.0
+PRJNA622517,status,HEALTHY_ONLY,76.0,0.0,healthy-only cohort; field is 100% "healthy" after null handling -- Phase 2 healthy_baseline scan,78.0
+PRJNA540406,gastrointest_disord,HEALTHY_ONLY,56.0,0.0,healthy-only cohort; field is 100% "none" (disorder-family control value) after null handling -- Phase 2 healthy_baseline scan,56.0
+PRJNA422125,gastrointest_disord,HEALTHY_ONLY,125.0,0.0,healthy-only cohort; field is 100% "none" (disorder-family control value) after null handling -- Phase 2 healthy_baseline scan,181.0
+PRJNA398279,host_disease,HEALTHY_ONLY,178.0,0.0,healthy-only cohort; field is 100% "none" (disorder-family control value) after null handling -- Phase 2 healthy_baseline scan,178.0
+PRJNA388263,gastrointest_disord,HEALTHY_ONLY,419.0,0.0,healthy-only cohort; field is 100% "none" (disorder-family control value) after null handling -- Phase 2 healthy_baseline scan,443.0
+PRJNA550519,gastrointest_disord,HEALTHY_ONLY,76.0,0.0,healthy-only cohort; field is 100% "none" (disorder-family control value) after null handling -- Phase 2 healthy_baseline scan,76.0
+PRJNA495320,host_disease,HEALTHY_ONLY,166.0,0.0,healthy-only cohort; field is 100% "none" (disorder-family control value) after null handling -- Phase 2 healthy_baseline scan,184.0

@@ -1,0 +1,39 @@
+# Explicit, hand-checked tag-name -> canonical-concept mapping
+# (IMPLEMENTATION.md Phase 1 step 1). Not inferred at runtime.
+#
+# Where a concept has more than one source tag, `harmonize.pivot_concepts`
+# coalesces them in the listed order -- first non-null value per sample wins
+# -- and records which raw tag it came from in `<concept>_source_tag`.
+#
+# geo and body_site are deliberately not mapped here: Data/sample_metadata.tsv
+# already carries region/iso/geo_loc_name (used throughout Phase 4), and
+# non-stool filtering (Phase 2 step 1.2) is driven by projects.csv.sample_type,
+# not a per-sample tags.tsv field. See notebooks/01_harmonize.ipynb for the note.
+
+age:
+  - age
+  - host_age
+
+age_unit:
+  - age_unit
+  - "age unit"
+  - "age units"
+  - host_age_units
+
+sex:
+  - sex
+  - host_sex
+
+bmi:
+  - body_mass_index
+  - host_body_mass_index
+
+host_species:
+  - host
+
+collection_date:
+  - collection_date
+
+subject_id:
+  - host_subject_id
+  - subject_id
