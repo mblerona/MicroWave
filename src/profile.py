@@ -67,13 +67,19 @@ def categorical_value_profile(tags_df, projects_df, min_samples=30, value_range=
     grepping the raw 216 MB file."""
     lo, hi = value_range
     counts = tags_df.groupby("tag")["value"].nunique()
-    eligible = counts[(counts >= lo) & (counts <= hi)].index
+    eligible = set(counts[(counts >= lo) & (counts <= hi)].index)
 
     condition_by_project = projects_df.set_index("project")["condition"]
 
+    # Slice to the eligible rows once, then one groupby pass. The previous
+    # version re-scanned all 3.5M rows with a boolean mask
+    # (`tags_df[tags_df["tag"] == tag]`) for every eligible field, which is
+    # what made this run for minutes. groupby default sort keeps the same
+    # alphabetical tag order as `counts.index` did.
+    subset = tags_df[tags_df["tag"].isin(eligible)]
+
     lines = []
-    for tag in eligible:
-        sub = tags_df[tags_df["tag"] == tag]
+    for tag, sub in subset.groupby("tag", sort=True):
         n_samples = sub[SAMPLE_ID_COL].nunique()
         if n_samples < min_samples:
             continue

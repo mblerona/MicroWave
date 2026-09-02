@@ -170,10 +170,17 @@ def write_sample_depth(depth_df, out_path):
 
 
 def write_derived_artifacts(taxa_full_path, taxon_cols, col_nonzero, col_total,
-                             n_rows, out_dir, prevalence_filter=0.01):
+                             n_rows, out_dir, prevalence_filter=0.01,
+                             batch_size=2048, row_group_size=5000):
     """Derive taxa_nonzero.parquet and taxa_prev01.npz from the already-written
     taxa_full.parquet (columnar, so selecting a column subset is cheap) —
     the CSV itself is never read a second time.
+
+    Both outputs are built by scanning taxa_full.parquet a slice of rows at a
+    time, so the full matrix is never held in memory at once. taxa_nonzero is
+    written in `row_group_size`-row groups (matching taxa_full, so it stays
+    well compressed); the prevalence scan uses the smaller `batch_size`
+    because it densifies each slice to pull out the non-zero cells.
     """
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -186,19 +193,50 @@ def write_derived_artifacts(taxa_full_path, taxon_cols, col_nonzero, col_total,
     keep_prev = taxon_cols[prevalence_mask].tolist()
     keep_prev_col_index = np.nonzero(prevalence_mask)[0]
 
-    # taxa_nonzero.parquet — all-zero columns dropped
-    nz_table = pq.read_table(taxa_full_path, columns=[SAMPLE_COL, *keep_nonzero])
-    pq.write_table(nz_table, out_dir / "taxa_nonzero.parquet", compression="snappy")
+    pf = pq.ParquetFile(taxa_full_path)
 
-    # taxa_prev01.npz — sparse CSR of the >=prevalence_filter taxa, plus the
-    # sample ids and the original taxon column indices bundled in the same
-    # file so the matrix stays self-describing.
-    prev_table = pq.read_table(taxa_full_path, columns=[SAMPLE_COL, *keep_prev])
-    sample_ids = prev_table.column(SAMPLE_COL).to_numpy(zero_copy_only=False)
-    prev_counts = np.column_stack([
-        prev_table.column(c).to_numpy(zero_copy_only=False) for c in keep_prev
-    ]).astype(np.int32)
-    mat = sparse.csr_matrix(prev_counts)
+    # taxa_nonzero.parquet — all-zero columns dropped, streamed one row group
+    # at a time so the wide matrix is never fully resident.
+    nz_path = out_dir / "taxa_nonzero.parquet"
+    nz_writer = None
+    for batch in pf.iter_batches(batch_size=row_group_size, columns=[SAMPLE_COL, *keep_nonzero]):
+        table = pa.Table.from_batches([batch])
+        if nz_writer is None:
+            nz_writer = pq.ParquetWriter(nz_path, table.schema, compression="snappy")
+        nz_writer.write_table(table)
+    if nz_writer is not None:
+        nz_writer.close()
+
+    # taxa_prev01.npz — sparse CSR of the >=prevalence_filter taxa, accumulated
+    # as COO triplets over the same batched scan, plus the sample ids and the
+    # original taxon column indices bundled in the same file so the matrix
+    # stays self-describing.
+    n_prev = len(keep_prev)
+    sample_chunks, row_idx, col_idx, values = [], [], [], []
+    offset = 0
+    for batch in pf.iter_batches(batch_size=batch_size, columns=[SAMPLE_COL, *keep_prev]):
+        sample_chunks.append(batch.column(0).to_numpy(zero_copy_only=False))
+        block = np.empty((batch.num_rows, n_prev), dtype=np.int32)
+        for j in range(n_prev):
+            block[:, j] = batch.column(j + 1).to_numpy(zero_copy_only=False)
+        r, c = np.nonzero(block)
+        row_idx.append((r + offset).astype(np.int32, copy=False))
+        col_idx.append(c.astype(np.int32, copy=False))
+        values.append(block[r, c])
+        offset += batch.num_rows
+
+    sample_ids = (np.concatenate(sample_chunks) if sample_chunks
+                  else np.array([], dtype=object))
+    mat = sparse.csr_matrix(
+        (
+            np.concatenate(values) if values else np.zeros(0, dtype=np.int32),
+            (
+                np.concatenate(row_idx) if row_idx else np.zeros(0, dtype=np.int64),
+                np.concatenate(col_idx) if col_idx else np.zeros(0, dtype=np.int64),
+            ),
+        ),
+        shape=(n_rows, n_prev),
+    )
 
     npz_path = out_dir / "taxa_prev01.npz"
     np.savez(
