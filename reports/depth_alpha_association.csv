@@ -1,0 +1,6 @@
+metric,column,depth_controlled,spearman_rho,p,n
+observed richness,richness_raw_counts,raw,0.3159630837703428,0.0,29995
+observed richness,richness_relative,raw,0.3159630837703428,0.0,29995
+Shannon,shannon_relative,raw,0.1002445299071991,7.620937821546208e-68,29995
+observed richness,richness_rarefied,rarefied,0.24954540107460432,0.0,29995
+Shannon,shannon_rarefied,rarefied,0.09899435712005236,3.3568825436822274e-66,29995

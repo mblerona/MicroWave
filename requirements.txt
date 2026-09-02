@@ -13,6 +13,11 @@ tqdm
 jupyter
 ipykernel
 
+# Phase 4 — the project-predictability classifier (the Goal 2 negative control)
+# is a PyTorch model. CPU build is enough; install with:
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+torch
+
 # Optional — only needed if differential abundance testing uses the R
 # implementations (ANCOM-BC / ALDEx2) instead of the Python fallback
 # rpy2

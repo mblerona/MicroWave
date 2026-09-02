@@ -20,9 +20,25 @@ transform:                   # putting counts on a comparable scale
   clr_pseudocount: 0.5
   clr_prevalence_filter: 0.01   # CLR only applied to the >=1% prevalence matrix
 
-variance:                    # technical-vs-biological variance partitioning
-  distance_subsample_n: 15000   # project-stratified subsample for dense distance matrices
-  permutations: 999
+variance:                    # Phase 4 — technical-vs-biological variance partitioning
+  distance_subsample_n: 7000    # project-stratified subsample for the dense distance matrices.
+                                # IMPLEMENTATION.md suggests 10–15k; 7k keeps each n×n float64
+                                # matrix (~0.4 GB) within a dev-machine ceiling (only one of
+                                # Bray-Curtis / Aitchison is ever resident). Subsample-size
+                                # sensitivity is a Phase 6 check; bump this when RAM allows.
+  permutations: 999             # PERMANOVA / adonis permutations (acceptance: ≥999)
+  pcoa_dims: 3                  # PCoA axes kept for the ordination plots
+  umap_neighbors: 30
+  umap_min_dist: 0.1
+  classifier:                  # PyTorch project-predictability negative control (step 4)
+    max_n: 40000               # project-stratified cap on the CV population (CLR matrix)
+    min_project_size: 25       # projects with fewer QC-passed samples are dropped (too few to stratify)
+    cv_folds: 5
+    epochs: 15
+    batch_size: 512
+    lr: 0.001
+    hidden: [256, 128]
+    dropout: 0.3
 
 differential:                # case/control differential abundance testing
   min_projects_per_category: 2
