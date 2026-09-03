@@ -1,0 +1,7 @@
+transform,disease_category,meta_hits_clr,meta_hits_alt,meta_hits_shared,replicated_clr,replicated_alt,replicated_shared,effect_spearman
+log_relative,cancer_other,2,1,1,0,0,0,0.9918228118886506
+log_relative,IBD,81,76,59,76,72,56,0.9922686296894069
+log_relative,HIV,8,26,7,8,20,7,0.9992836862242691
+log_relative,asthma,0,0,0,0,0,0,0.9948013103546505
+log_relative,NAFLD,10,8,8,8,5,5,0.996243952126305
+log_relative,T1D,0,0,0,0,0,0,0.9939719989629248

@@ -1,0 +1,13 @@
+prevalence_tier,n_taxa_universe,disease_category,n_replicated
+0.01,419,cancer_other,0
+0.01,419,IBD,76
+0.01,419,HIV,8
+0.01,419,asthma,0
+0.01,419,NAFLD,8
+0.01,419,T1D,0
+0.1,157,cancer_other,0
+0.1,157,IBD,75
+0.1,157,HIV,8
+0.1,157,asthma,0
+0.1,157,NAFLD,7
+0.1,157,T1D,0

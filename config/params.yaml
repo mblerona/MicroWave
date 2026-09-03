@@ -40,9 +40,32 @@ variance:                    # Phase 4 — technical-vs-biological variance part
     hidden: [256, 128]
     dropout: 0.3
 
-differential:                # case/control differential abundance testing
-  min_projects_per_category: 2
-  min_cases_per_category: 100
+differential:                # Phase 5 — case/control differential abundance testing
+  min_projects_per_category: 2      # a disease category needs >= this many projects to enter 5a/5b
+  min_cases_per_category: 100       # ...and >= this many cases pooled across them
+  min_cases_per_project: 10         # per (project, category): drop the project below this many cases
+  min_controls_per_project: 10      # ...or this many controls (mirrors qc.* — restated for clarity)
+  within_prevalence: 0.10           # a taxon must be present in >= 10% of a contrast's samples to be tested
+  covariate_min_coverage: 0.80      # age_years / sex used as a covariate only where >= 80% covered in both arms
+  meta_min_projects_per_taxon: 2    # 5b: a taxon needs >= this many project-level estimates to be pooled
   fdr_alpha: 0.05
+  category_groups:                  # collapse the IBD subtypes — CD / UC / unspecified are one disease family
+    IBD_CD: IBD
+    IBD_UC: IBD
+    IBD: IBD
+  pooled_methods: [combat_ols, mixedlm]   # 5c: explicit ComBat correction + project random-effect model
+  batch_leakage:                   # 5e — leave-one-project-out vs random k-fold disease classifier
+    cv_folds: 5
+    models: [logreg, gboost]
+    logreg_C: 1.0
+    gboost_max_iter: 300
+    gboost_learning_rate: 0.05
+    gboost_max_depth: 3
 
 prevalence_tiers: [0.01, 0.10]   # alternate prevalence cutoffs for sensitivity checks
+
+validation:                  # re-run the disease-association chain under varied choices
+  null_shuffles: 10              # within-block label permutations for the shuffling null
+  depth_thresholds: [5000, 10000, 20000]   # minimum-reads cuts to rebuild the cohort at
+  prevalence_tiers: [0.01, 0.10]            # compendium-wide taxon-prevalence universe
+  literature_top_n: 25           # top replicated hits per disease to cross-check against priors

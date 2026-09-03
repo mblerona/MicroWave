@@ -1,0 +1,113 @@
+disease_category,taxon,genus,thresholds,stable
+HIV,Bacteria.Actinomycetota.Coriobacteriia.Coriobacteriales.Atopobiaceae.Tractidigestivibacter,Tractidigestivibacter,20000,False
+HIV,Bacteria.Actinomycetota.Coriobacteriia.Coriobacteriales.Eggerthellaceae.Adlercreutzia,Adlercreutzia,20000,False
+HIV,Bacteria.Actinomycetota.Coriobacteriia.Coriobacteriales.Eggerthellaceae.Incertae Sedis,Incertae Sedis,20000,False
+HIV,Bacteria.Bacillota.Bacilli.Erysipelotrichales.Erysipelatoclostridiaceae.Catenibacterium,Catenibacterium,20000,False
+HIV,Bacteria.Bacillota.Bacilli.RF39.Incertae Sedis.Incertae Sedis,Incertae Sedis,"10000,20000",False
+HIV,Bacteria.Bacillota.Clostridia.Christensenellales.Christensenellaceae.Christensenellaceae R-7 group,Christensenellaceae R-7 group,"5000,10000,20000",True
+HIV,Bacteria.Bacillota.Clostridia.Clostridia UCG-014.Incertae Sedis.Incertae Sedis,Incertae Sedis,"5000,10000,20000",True
+HIV,Bacteria.Bacillota.Clostridia.Clostridiales.Clostridiaceae.Clostridium,Clostridium,"5000,10000,20000",True
+HIV,Bacteria.Bacillota.Clostridia.Lachnospirales.Lachnospiraceae.Oribacterium,Oribacterium,20000,False
+HIV,Bacteria.Bacillota.Clostridia.Lachnospirales.Lachnospiraceae.[Ruminococcus] gnavus group,[Ruminococcus] gnavus group,20000,False
+HIV,Bacteria.Bacillota.Clostridia.Oscillospirales.Butyricicoccaceae.UCG-009,UCG-009,20000,False
+HIV,Bacteria.Bacillota.Clostridia.Oscillospirales.Oscillospiraceae.Flavonifractor,Flavonifractor,20000,False
+HIV,Bacteria.Bacillota.Clostridia.Oscillospirales.Oscillospiraceae.UCG-003,UCG-003,20000,False
+HIV,Bacteria.Bacillota.Clostridia.Oscillospirales.Oscillospiraceae.UCG-005,UCG-005,"5000,10000,20000",True
+HIV,Bacteria.Bacillota.Clostridia.Oscillospirales.Ruminococcaceae.[Eubacterium] siraeum group,[Eubacterium] siraeum group,"5000,10000,20000",True
+HIV,Bacteria.Bacillota.Clostridia.Oscillospirales.UCG-010.Incertae Sedis,Incertae Sedis,20000,False
+HIV,Bacteria.Bacillota.Clostridia.Peptostreptococcales-Tissierellales.Anaerovoracaceae.Family XIII UCG-001,Family XIII UCG-001,20000,False
+HIV,Bacteria.Bacillota.Clostridia.Peptostreptococcales-Tissierellales.Peptostreptococcaceae.Romboutsia,Romboutsia,"5000,10000,20000",True
+HIV,Bacteria.Bacteroidota.Bacteroidia.Bacteroidales.Prevotellaceae.Massiliprevotella,Massiliprevotella,20000,False
+HIV,Bacteria.Fusobacteriota.Fusobacteriia.Fusobacteriales.Fusobacteriaceae.Fusobacterium,Fusobacterium,"5000,10000,20000",True
+HIV,Bacteria.Thermodesulfobacteriota.Desulfovibrionia.Desulfovibrionales.Desulfovibrionaceae.Bilophila,Bilophila,20000,False
+IBD,Archaea.Methanobacteriota.Methanobacteria.Methanobacteriales.Methanobacteriaceae.Methanobrevibacter,Methanobrevibacter,"5000,10000,20000",True
+IBD,Bacteria.Actinomycetota.Actinobacteria.Actinomycetales.Actinomycetaceae.Schaalia,Schaalia,"5000,10000,20000",True
+IBD,Bacteria.Actinomycetota.Actinobacteria.Micrococcales.Micrococcaceae.Rothia,Rothia,"5000,10000,20000",True
+IBD,Bacteria.Actinomycetota.Actinobacteria.Mycobacteriales.Corynebacteriaceae.Corynebacterium,Corynebacterium,"5000,10000,20000",True
+IBD,Bacteria.Actinomycetota.Coriobacteriia.Coriobacteriales.Coriobacteriales Incertae Sedis.Incertae Sedis,Incertae Sedis,"5000,10000,20000",True
+IBD,Bacteria.Actinomycetota.Coriobacteriia.Coriobacteriales.Eggerthellaceae.Eggerthella,Eggerthella,"5000,10000,20000",True
+IBD,Bacteria.Actinomycetota.Coriobacteriia.Coriobacteriales.Eggerthellaceae.Senegalimassilia,Senegalimassilia,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Bacilli.Erysipelotrichales.Erysipelatoclostridiaceae.Erysipelotrichaceae UCG-003,Erysipelotrichaceae UCG-003,5000,False
+IBD,Bacteria.Bacillota.Bacilli.Erysipelotrichales.Erysipelatoclostridiaceae.Thomasclavelia,Thomasclavelia,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Bacilli.Erysipelotrichales.Erysipelotrichaceae.Amedibacillus,Amedibacillus,"5000,10000",False
+IBD,Bacteria.Bacillota.Bacilli.Erysipelotrichales.Erysipelotrichaceae.Solobacterium,Solobacterium,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Bacilli.Erysipelotrichales.Erysipelotrichaceae.[Clostridium] innocuum group,[Clostridium] innocuum group,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Bacilli.Lactobacillales.Carnobacteriaceae.Granulicatella,Granulicatella,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Bacilli.Lactobacillales.Enterococcaceae.Enterococcus,Enterococcus,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Bacilli.Lactobacillales.Lactobacillaceae.Ligilactobacillus,Ligilactobacillus,20000,False
+IBD,Bacteria.Bacillota.Bacilli.Lactobacillales.Streptococcaceae.Lactococcus,Lactococcus,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Bacilli.RF39.Incertae Sedis.Incertae Sedis,Incertae Sedis,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Bacilli.Staphylococcales.Gemellaceae.Gemella,Gemella,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Christensenellales.Christensenellaceae.Christensenellaceae R-7 group,Christensenellaceae R-7 group,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Christensenellales.Christensenellaceae.Incertae Sedis,Incertae Sedis,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Clostridia UCG-014.Incertae Sedis.Incertae Sedis,Incertae Sedis,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Eubacteriales.Anaerofustaceae.Anaerofustis,Anaerofustis,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Lachnospirales.Defluviitaleaceae.Defluviitaleaceae UCG-011,Defluviitaleaceae UCG-011,"5000,10000",False
+IBD,Bacteria.Bacillota.Clostridia.Lachnospirales.Lachnospiraceae.Agathobacter,Agathobacter,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Lachnospirales.Lachnospiraceae.Anaerobutyricum,Anaerobutyricum,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Lachnospirales.Lachnospiraceae.Butyribacter,Butyribacter,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Lachnospirales.Lachnospiraceae.CAG-56,CAG-56,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Lachnospirales.Lachnospiraceae.Coprococcus,Coprococcus,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Lachnospirales.Lachnospiraceae.Fusicatenibacter,Fusicatenibacter,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Lachnospirales.Lachnospiraceae.Lachnospira,Lachnospira,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Lachnospirales.Lachnospiraceae.Lachnospiraceae FCS020 group,Lachnospiraceae FCS020 group,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Lachnospirales.Lachnospiraceae.Lachnospiraceae ND3007 group,Lachnospiraceae ND3007 group,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Lachnospirales.Lachnospiraceae.Lachnospiraceae NK4A136 group,Lachnospiraceae NK4A136 group,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Lachnospirales.Lachnospiraceae.Marvinbryantia,Marvinbryantia,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Lachnospirales.Lachnospiraceae.Mediterraneibacter,Mediterraneibacter,5000,False
+IBD,Bacteria.Bacillota.Clostridia.Lachnospirales.Lachnospiraceae.NA,Lachnospiraceae,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Lachnospirales.Lachnospiraceae.Roseburia,Roseburia,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Lachnospirales.Lachnospiraceae.[Eubacterium] eligens group,[Eubacterium] eligens group,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Lachnospirales.Lachnospiraceae.[Eubacterium] ruminantium group,[Eubacterium] ruminantium group,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Lachnospirales.Lachnospiraceae.[Eubacterium] ventriosum group,[Eubacterium] ventriosum group,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Lachnospirales.Lachnospiraceae.[Eubacterium] xylanophilum group,[Eubacterium] xylanophilum group,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Monoglobales.Monoglobaceae.Monoglobus,Monoglobus,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.NA.NA.NA,Clostridia,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Oscillospirales.Butyricicoccaceae.Agathobaculum,Agathobaculum,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Oscillospirales.Oscillospiraceae.Flavonifractor,Flavonifractor,20000,False
+IBD,Bacteria.Bacillota.Clostridia.Oscillospirales.Oscillospiraceae.Incertae Sedis,Incertae Sedis,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Oscillospirales.Oscillospiraceae.Intestinimonas,Intestinimonas,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Oscillospirales.Oscillospiraceae.NK4A214 group,NK4A214 group,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Oscillospirales.Oscillospiraceae.Oscillospira,Oscillospira,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Oscillospirales.Oscillospiraceae.UCG-002,UCG-002,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Oscillospirales.Oscillospiraceae.UCG-003,UCG-003,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Oscillospirales.Oscillospiraceae.UCG-005,UCG-005,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Oscillospirales.Ruminococcaceae.Acutalibacter,Acutalibacter,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Oscillospirales.Ruminococcaceae.Gemmiger,Gemmiger,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Oscillospirales.Ruminococcaceae.Incertae Sedis,Incertae Sedis,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Oscillospirales.Ruminococcaceae.Ruminococcus,Ruminococcus,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Oscillospirales.Ruminococcaceae.Ruthenibacterium,Ruthenibacterium,"10000,20000",False
+IBD,Bacteria.Bacillota.Clostridia.Oscillospirales.Ruminococcaceae.[Clostridium] methylpentosum group,[Clostridium] methylpentosum group,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Oscillospirales.Ruminococcaceae.[Eubacterium] siraeum group,[Eubacterium] siraeum group,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Oscillospirales.UCG-010.Incertae Sedis,Incertae Sedis,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Oscillospirales.[Eubacterium] coprostanoligenes group.Incertae Sedis,Incertae Sedis,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Peptococcales.Peptococcaceae.Incertae Sedis,Incertae Sedis,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Peptostreptococcales-Tissierellales.Anaerovoracaceae.Family XIII AD3011 group,Family XIII AD3011 group,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Peptostreptococcales-Tissierellales.Family XI.Anaerococcus,Anaerococcus,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Peptostreptococcales-Tissierellales.Family XI.Peptoniphilus,Peptoniphilus,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Peptostreptococcales-Tissierellales.Peptostreptococcaceae.Peptostreptococcus,Peptostreptococcus,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Clostridia.Peptostreptococcales-Tissierellales.Peptostreptococcaceae.Romboutsia,Romboutsia,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.NA.NA.NA.NA,Bacteria.Bacillota.NA.NA.NA.NA,"5000,10000,20000",True
+IBD,Bacteria.Bacillota.Negativicutes.Acidaminococcales.Acidaminococcaceae.Acidaminococcus,Acidaminococcus,"10000,20000",False
+IBD,Bacteria.Bacillota.Negativicutes.Acidaminococcales.Acidaminococcaceae.Phascolarctobacterium,Phascolarctobacterium,"5000,20000",False
+IBD,Bacteria.Bacillota.Negativicutes.Veillonellales-Selenomonadales.Veillonellaceae.Dialister,Dialister,20000,False
+IBD,Bacteria.Bacillota.Negativicutes.Veillonellales-Selenomonadales.Veillonellaceae.Veillonella,Veillonella,"5000,10000,20000",True
+IBD,Bacteria.Bacteroidota.Bacteroidia.Bacteroidales.Barnesiellaceae.Barnesiella,Barnesiella,"5000,10000,20000",True
+IBD,Bacteria.Bacteroidota.Bacteroidia.Bacteroidales.Muribaculaceae.Incertae Sedis,Incertae Sedis,"5000,10000,20000",True
+IBD,Bacteria.Bacteroidota.Bacteroidia.Bacteroidales.Prevotellaceae.Paraprevotella,Paraprevotella,"5000,10000,20000",True
+IBD,Bacteria.Bacteroidota.Bacteroidia.Bacteroidales.Prevotellaceae.Segatella,Segatella,"5000,10000,20000",True
+IBD,Bacteria.Bacteroidota.Bacteroidia.Bacteroidales.Rikenellaceae.Alistipes,Alistipes,"5000,10000,20000",True
+IBD,Bacteria.Bacteroidota.Bacteroidia.Bacteroidales.Tannerellaceae.Parabacteroides,Parabacteroides,"5000,10000,20000",True
+IBD,Bacteria.Fusobacteriota.Fusobacteriia.Fusobacteriales.Fusobacteriaceae.Fusobacterium,Fusobacterium,"5000,10000,20000",True
+IBD,Bacteria.Pseudomonadota.Alphaproteobacteria.Rhodospirillales.Incertae Sedis.Incertae Sedis,Incertae Sedis,"5000,10000,20000",True
+IBD,Bacteria.Pseudomonadota.Alphaproteobacteria.Rickettsiales.Mitochondria.Incertae Sedis,Incertae Sedis,5000,False
+IBD,Bacteria.Pseudomonadota.Gammaproteobacteria.Enterobacterales.Enterobacteriaceae.Klebsiella,Klebsiella,"5000,10000,20000",True
+IBD,Bacteria.Verrucomicrobiota.Verrucomicrobiia.Verrucomicrobiales.Akkermansiaceae.Akkermansia,Akkermansia,"5000,10000,20000",True
+NAFLD,Bacteria.Bacillota.Clostridia.Oscillospirales.Butyricicoccaceae.UCG-009,UCG-009,"5000,10000",False
+NAFLD,Bacteria.Bacillota.Clostridia.Oscillospirales.Oscillospiraceae.UCG-002,UCG-002,"5000,10000",False
+NAFLD,Bacteria.Bacillota.Clostridia.Oscillospirales.Ruminococcaceae.Ruminococcus,Ruminococcus,"5000,10000",False
+NAFLD,Bacteria.Bacillota.Clostridia.Oscillospirales.UCG-010.Incertae Sedis,Incertae Sedis,"5000,10000",False
+NAFLD,Bacteria.Bacillota.Clostridia.Oscillospirales.[Eubacterium] coprostanoligenes group.Incertae Sedis,Incertae Sedis,"5000,10000",False
+NAFLD,Bacteria.Bacteroidota.Bacteroidia.Bacteroidales.Marinifilaceae.Butyricimonas,Butyricimonas,"5000,10000",False
+NAFLD,Bacteria.Pseudomonadota.Gammaproteobacteria.Enterobacterales.Enterobacteriaceae.Citrobacter,Citrobacter,"5000,10000",False
+NAFLD,Bacteria.Verrucomicrobiota.Verrucomicrobiia.Verrucomicrobiales.Akkermansiaceae.Akkermansia,Akkermansia,"5000,10000",False

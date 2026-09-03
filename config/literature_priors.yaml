@@ -1,0 +1,118 @@
+# Curated genus-level direction expectations for the disease categories that
+# reach a replicated hit. These are ORIENTATION ONLY -- textbook / review-level
+# consensus from the general human gut microbiome literature, NOT extracted from
+# the specific studies in this compendium. A replicated hit matching a known
+# direction is reassuring; a mismatch, or a hit with no prior, is flagged for a
+# manual read of the source papers (DOIs are emitted per category in
+# reports/literature_crosscheck.csv).
+#
+# Matching is case-insensitive substring against the resolved genus label, so
+# "Eubacterium" matches "[Eubacterium] siraeum group".
+#
+#   up   = expected HIGHER in cases
+#   down = expected LOWER in cases
+
+IBD:
+  down:
+    - Faecalibacterium
+    - Roseburia
+    - Bifidobacterium
+    - Fusicatenibacter
+    - Anaerostipes
+    - Agathobacter
+    - Coprococcus
+    - Eubacterium
+    - Butyricicoccus
+    - Alistipes
+    - Akkermansia
+    - Methanobrevibacter
+  up:
+    - Escherichia
+    - Enterococcus
+    - Klebsiella
+    - Veillonella
+    - Ruminococcus gnavus
+    - Proteus
+    - Haemophilus
+    - Fusobacterium
+    - Peptostreptococcus
+
+HIV:
+  up:
+    - Prevotella
+    - Fusobacterium
+    - Catenibacterium
+    - Desulfovibrio
+    - Succinivibrio
+  down:
+    - Bacteroides
+    - Akkermansia
+    - Faecalibacterium
+    - Ruminococcus
+
+CRC:
+  up:
+    - Fusobacterium
+    - Peptostreptococcus
+    - Porphyromonas
+    - Parvimonas
+    - Gemella
+    - Solobacterium
+    - Parabacteroides
+  down:
+    - Roseburia
+    - Faecalibacterium
+    - Eubacterium
+
+# colorectal-neoplasia dominated in this compendium -- reuse the CRC priors
+cancer_other:
+  up:
+    - Fusobacterium
+    - Peptostreptococcus
+    - Porphyromonas
+    - Parvimonas
+    - Gemella
+    - Solobacterium
+  down:
+    - Roseburia
+    - Faecalibacterium
+
+gastric_cancer:
+  up:
+    - Lactobacillus
+    - Streptococcus
+    - Fusobacterium
+    - Veillonella
+    - Prevotella
+  down:
+    - Faecalibacterium
+
+NAFLD:
+  up:
+    - Escherichia
+    - Ruminococcus gnavus
+    - Dorea
+    - Lactobacillus
+  down:
+    - Faecalibacterium
+    - Coprococcus
+    - Eubacterium
+    - Prevotella
+
+T1D:
+  down:
+    - Faecalibacterium
+    - Roseburia
+    - Bifidobacterium
+    - Akkermansia
+  up:
+    - Bacteroides
+    - Ruminococcus
+
+asthma:
+  down:
+    - Faecalibacterium
+    - Roseburia
+    - Bifidobacterium
+  up:
+    - Clostridium

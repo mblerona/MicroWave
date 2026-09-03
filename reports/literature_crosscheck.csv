@@ -1,0 +1,42 @@
+disease_category,genus,taxon,meta_effect,meta_q,expected,observed,verdict
+HIV,Romboutsia,Bacteria.Bacillota.Clostridia.Peptostreptococcales-Tissierellales.Peptostreptococcaceae.Romboutsia,-1.2175404784629016,0.0006867875811013333,no_prior,down,no_prior
+HIV,Christensenellaceae R-7 group,Bacteria.Bacillota.Clostridia.Christensenellales.Christensenellaceae.Christensenellaceae R-7 group,-0.9745177744725896,0.0030194007413242422,no_prior,down,no_prior
+HIV,Incertae Sedis,Bacteria.Bacillota.Clostridia.Clostridia UCG-014.Incertae Sedis.Incertae Sedis,-1.3250582848801957,0.011772434789171634,no_prior,down,no_prior
+HIV,UCG-005,Bacteria.Bacillota.Clostridia.Oscillospirales.Oscillospiraceae.UCG-005,-0.8780973558194047,0.0206349479330309,no_prior,down,no_prior
+HIV,[Eubacterium] siraeum group,Bacteria.Bacillota.Clostridia.Oscillospirales.Ruminococcaceae.[Eubacterium] siraeum group,-0.9226173560663293,0.0206349479330309,no_prior,down,no_prior
+HIV,Fusobacterium,Bacteria.Fusobacteriota.Fusobacteriia.Fusobacteriales.Fusobacteriaceae.Fusobacterium,0.6216954483956044,0.0206349479330309,up,up,concordant
+HIV,Clostridium,Bacteria.Bacillota.Clostridia.Clostridiales.Clostridiaceae.Clostridium,-0.8513229592020536,0.04224497413197092,no_prior,down,no_prior
+HIV,Incertae Sedis,Bacteria.Bacillota.Bacilli.RF39.Incertae Sedis.Incertae Sedis,-0.6993603330476099,0.04224497413197092,no_prior,down,no_prior
+IBD,Christensenellaceae R-7 group,Bacteria.Bacillota.Clostridia.Christensenellales.Christensenellaceae.Christensenellaceae R-7 group,-2.1170462152553253,2.000784839228328e-15,no_prior,down,no_prior
+IBD,UCG-005,Bacteria.Bacillota.Clostridia.Oscillospirales.Oscillospiraceae.UCG-005,-1.6084159866617305,1.2114408330693257e-10,no_prior,down,no_prior
+IBD,UCG-002,Bacteria.Bacillota.Clostridia.Oscillospirales.Oscillospiraceae.UCG-002,-1.8974024918574586,2.703121893895287e-10,no_prior,down,no_prior
+IBD,Butyribacter,Bacteria.Bacillota.Clostridia.Lachnospirales.Lachnospiraceae.Butyribacter,-0.975522005370887,2.069097977679806e-09,no_prior,down,no_prior
+IBD,Ruminococcus,Bacteria.Bacillota.Clostridia.Oscillospirales.Ruminococcaceae.Ruminococcus,-1.8064943414968324,2.069097977679806e-09,no_prior,down,no_prior
+IBD,Anaerococcus,Bacteria.Bacillota.Clostridia.Peptostreptococcales-Tissierellales.Family XI.Anaerococcus,0.8346821336833957,3.4361717382466345e-08,no_prior,up,no_prior
+IBD,Incertae Sedis,Bacteria.Bacillota.Clostridia.Oscillospirales.Ruminococcaceae.Incertae Sedis,-0.9864874696504259,2.5550507147533812e-06,no_prior,down,no_prior
+IBD,UCG-003,Bacteria.Bacillota.Clostridia.Oscillospirales.Oscillospiraceae.UCG-003,-0.9375872072281142,2.5550507147533812e-06,no_prior,down,no_prior
+IBD,[Eubacterium] ruminantium group,Bacteria.Bacillota.Clostridia.Lachnospirales.Lachnospiraceae.[Eubacterium] ruminantium group,-1.756037212192742,9.896745718737323e-06,down,down,concordant
+IBD,Incertae Sedis,Bacteria.Bacillota.Clostridia.Oscillospirales.[Eubacterium] coprostanoligenes group.Incertae Sedis,-1.4428342679068347,9.896745718737323e-06,no_prior,down,no_prior
+IBD,Peptostreptococcus,Bacteria.Bacillota.Clostridia.Peptostreptococcales-Tissierellales.Peptostreptococcaceae.Peptostreptococcus,0.709851891770446,1.3834271395799887e-05,up,up,concordant
+IBD,Fusicatenibacter,Bacteria.Bacillota.Clostridia.Lachnospirales.Lachnospiraceae.Fusicatenibacter,-1.2702984699001307,1.4948187404485374e-05,down,down,concordant
+IBD,Akkermansia,Bacteria.Verrucomicrobiota.Verrucomicrobiia.Verrucomicrobiales.Akkermansiaceae.Akkermansia,-1.3838416902310682,1.4948187404485374e-05,down,down,concordant
+IBD,[Clostridium] methylpentosum group,Bacteria.Bacillota.Clostridia.Oscillospirales.Ruminococcaceae.[Clostridium] methylpentosum group,0.7313019289990803,3.7366377953917696e-05,no_prior,up,no_prior
+IBD,Incertae Sedis,Bacteria.Bacillota.Clostridia.Oscillospirales.Oscillospiraceae.Incertae Sedis,-0.9968440503037497,8.730545357002571e-05,no_prior,down,no_prior
+IBD,Alistipes,Bacteria.Bacteroidota.Bacteroidia.Bacteroidales.Rikenellaceae.Alistipes,-1.1191018109494495,0.00012879335117932982,down,down,concordant
+IBD,Clostridia,Bacteria.Bacillota.Clostridia.NA.NA.NA,-0.718488558429276,0.0001664782120106132,no_prior,down,no_prior
+IBD,NK4A214 group,Bacteria.Bacillota.Clostridia.Oscillospirales.Oscillospiraceae.NK4A214 group,-1.5274722124002464,0.0001892248429059342,no_prior,down,no_prior
+IBD,Gemmiger,Bacteria.Bacillota.Clostridia.Oscillospirales.Ruminococcaceae.Gemmiger,-2.2910406945471857,0.0001892248429059342,no_prior,down,no_prior
+IBD,Gemella,Bacteria.Bacillota.Bacilli.Staphylococcales.Gemellaceae.Gemella,0.6683669495030791,0.0003395501088848539,no_prior,up,no_prior
+IBD,[Eubacterium] xylanophilum group,Bacteria.Bacillota.Clostridia.Lachnospirales.Lachnospiraceae.[Eubacterium] xylanophilum group,-0.7588330865478357,0.00040859288666345473,down,down,concordant
+IBD,Enterococcus,Bacteria.Bacillota.Bacilli.Lactobacillales.Enterococcaceae.Enterococcus,1.3045221653781665,0.0005233824827365146,up,up,concordant
+IBD,Monoglobus,Bacteria.Bacillota.Clostridia.Monoglobales.Monoglobaceae.Monoglobus,-0.867324207716336,0.0006469068107915237,no_prior,down,no_prior
+IBD,Romboutsia,Bacteria.Bacillota.Clostridia.Peptostreptococcales-Tissierellales.Peptostreptococcaceae.Romboutsia,-0.7560470358133443,0.0007139639018571083,no_prior,down,no_prior
+IBD,Fusobacterium,Bacteria.Fusobacteriota.Fusobacteriia.Fusobacteriales.Fusobacteriaceae.Fusobacterium,0.8328014831023585,0.0009505864562284111,up,up,concordant
+NAFLD,Citrobacter,Bacteria.Pseudomonadota.Gammaproteobacteria.Enterobacterales.Enterobacteriaceae.Citrobacter,-0.8885745834471498,0.014102424635839725,no_prior,down,no_prior
+NAFLD,Incertae Sedis,Bacteria.Bacillota.Clostridia.Oscillospirales.[Eubacterium] coprostanoligenes group.Incertae Sedis,-1.5472919632189437,0.014102424635839725,no_prior,down,no_prior
+NAFLD,Ruminococcus,Bacteria.Bacillota.Clostridia.Oscillospirales.Ruminococcaceae.Ruminococcus,-1.4722065821167098,0.019158760482559906,no_prior,down,no_prior
+NAFLD,UCG-009,Bacteria.Bacillota.Clostridia.Oscillospirales.Butyricicoccaceae.UCG-009,-0.9401154079373635,0.019462895597439314,no_prior,down,no_prior
+NAFLD,Incertae Sedis,Bacteria.Bacillota.Clostridia.Oscillospirales.UCG-010.Incertae Sedis,-1.1918614414117488,0.022676348945775197,no_prior,down,no_prior
+NAFLD,UCG-002,Bacteria.Bacillota.Clostridia.Oscillospirales.Oscillospiraceae.UCG-002,-1.4664711495125746,0.022676348945775197,no_prior,down,no_prior
+NAFLD,Akkermansia,Bacteria.Verrucomicrobiota.Verrucomicrobiia.Verrucomicrobiales.Akkermansiaceae.Akkermansia,-1.2390964035938956,0.02413036010458768,no_prior,down,no_prior
+NAFLD,Butyricimonas,Bacteria.Bacteroidota.Bacteroidia.Bacteroidales.Marinifilaceae.Butyricimonas,-1.1380485827145055,0.028484919721412424,no_prior,down,no_prior
