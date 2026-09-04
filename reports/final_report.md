@@ -14,6 +14,18 @@
 
 A cleaned per-sample table, an auditable filtering flow, a variance-partitioning answer for the technical vs biological split, a ranked list of disease-associated genera with a replication verdict, and the robustness checks below. The numbered notebooks run in order from the raw files; this report consumes their outputs.
 
+## Findings in brief
+
+**The lab is the story.** Across 341 studies, the single largest source of difference between two stool samples is which study produced them — project identity explains 39–43% of community variation (marginal PERMANOVA), while case/control status explains about 1%. Every purely technical factor tested — 16S region, sequencing instrument, extraction kit, bead-beating, sequencing depth, world region — individually outweighs disease. A plain linear model identifies which of 267 studies a sample came from with 76% accuracy against a 4% chance baseline, and a neural network does no better: the lab signature is strong, low-dimensional and trivially learnable. This one fact governs everything else — any analysis that pools samples across studies is at high risk of reporting lab differences as biology.
+
+**One disease has a clean, replicable genus-level signature: IBD.** 76 genera move in the same direction whether the comparison is done the batch-safe way (within-study meta-analysis) or the naive way (pooled across labs with correction) — effect-size correlation 0.98, sign agreement 97%, almost no between-study heterogeneity. The pattern is the one the published literature describes: near-uniform depletion of butyrate- and other short-chain-fatty-acid-producing Firmicutes (*Roseburia*, *Agathobacter*, *Faecalibacterium*-adjacent *Gemmiger*, *Fusicatenibacter*, *Coprococcus*, *Butyribacter*, several *Eubacterium* and Oscillospiraceae groups, Christensenellaceae), alongside enrichment of oral-cavity and opportunistic taxa (*Peptostreptococcus*, *Veillonella*, *Rothia*, *Gemella*, *Granulicatella*, *Enterococcus*, *Klebsiella*, *Fusobacterium*). *Akkermansia* and *Alistipes* are down. The result survives label-shuffling, depth thresholds from 5,000 to 20,000 reads, the choice of transform, and the prevalence filter, and shows zero disagreements with textbook priors.
+
+**HIV shows a small real signal mostly buried under a batch artifact.** Only 8 genera replicate across both designs (*Fusobacterium* up; *Romboutsia*, *Christensenellaceae R-7 group*, an *[Eubacterium] siraeum* group, *Clostridium* and others down), but the pooled analysis alone flags 33 further genera, and the two designs' effect sizes correlate only 0.43. This is the concrete demonstration of the pooling hazard: most of what a naive cross-study HIV analysis "finds" does not hold up once batch effects are properly excluded.
+
+**NAFLD is weak and fragile; T1D, asthma and the mixed cancer group yield nothing defensible here.** NAFLD produces 8 replicated depletions, but they vanish when the depth threshold is raised to 20,000 reads. T1D and asthma have no hits that survive multiple-testing correction in the batch-safe analysis — they are honestly under-powered (100 and 248 cases across a handful of small studies). The heterogeneous "other cancers" category — colorectal adenoma/carcinoma plus one gastric-cancer study — shows within-study and pooled effects that are *negatively* correlated (ρ = −0.76), which is a signal that these studies should not be combined at all, not a finding.
+
+**How much of a disease "prediction" is really lab recognition — measured.** A classifier tested on studies it has never seen (leave-one-project-out CV) is compared with the same classifier tested on held-out samples from studies it *has* seen (random k-fold CV). The random-CV score is inflated for every disease and every model — by up to +0.25 AUC for HIV and +0.21 for T1D. Under the honest evaluation, only IBD rises clearly above chance (AUC ≈ 0.70–0.73); for the rest, a model that cannot see the originating lab can barely tell case from control.
+
 ## Metadata harmonisation — coverage
 
 168,464 samples.
@@ -222,4 +234,36 @@ Replicated hits vs curated genus-direction expectations (orientation only — no
 ## Reading the result
 
 The centrepiece is the *replicated* set: genera significant in the within-study meta-analysis **and** the naive pooled test. Genera significant only when samples are pooled across labs are flagged as likely batch artifacts, not findings. The batch-leakage gap (random CV minus leave-one-project-out CV) quantifies, per disease, how much of a classifier's apparent accuracy is study recognition rather than biology.
+
+## Discussion and conclusions
+
+### Goal 2 — how much of what we see is the lab
+
+The answer is: most of it. Study identity accounts for roughly 40% of between-sample variation; disease status accounts for about 1%, and adds only ~0.2 percentage points once the technical factors are fitted first (`sequential:technical_first`). Fitted first instead, disease reaches ~1% — the gap between those two numbers (0.16% vs 0.97%) is the honest uncertainty band on any pooled disease effect. The ordering is not close, and it is not an artifact of one distance metric or one cohort: Bray-Curtis and Aitchison agree, and the labelled sub-cohort shows the same shape. The project-prediction classifier makes the point a second way — the lab signature is not subtle structure that careful modelling might remove, it is the dominant, linearly separable axis of the data. Sequencing depth is a further confounder specifically for richness-based comparisons (Spearman correlation with observed richness ≈ 0.32, still ≈ 0.25 after rarefaction), so depth has to be controlled wherever alpha diversity enters an analysis.
+
+The practical consequence, which the disease results then bear out, is that cross-study pooling in this compendium cannot be trusted on its own. It is not that pooling is always wrong — for IBD it happened to agree closely with the batch-safe analysis — but that pooling alone gives no way to tell agreement from artifact.
+
+### Goal 1 — disease-associated genera
+
+Six disease categories had enough within-study case/control data to analyse (IBD, HIV, NAFLD, T1D, asthma, and a mixed "other cancers" group). The per-category verdicts are in *Findings in brief* above; the shape of the overall result is that **the batch-safe design is far more conservative than the pooled one, and the gap between them is the useful measurement.** IBD replicates almost completely (76 genera, ρ = 0.98). HIV replicates partially with a large pooled-only excess (8 vs 33, ρ = 0.43). NAFLD replicates weakly (8, and threshold-fragile). Cancer anti-replicates (ρ = −0.76). T1D and asthma produce nothing in either direction that survives correction.
+
+Only IBD, then, supports a genus-level claim from this data — and that claim is a replication of existing knowledge rather than a new discovery: loss of fibre-fermenting, butyrate-producing commensals and a shift toward oral-derived and facultatively anaerobic taxa. Its value here is that it was recovered from four independent studies with near-zero heterogeneity under a design that structurally cannot import batch effects; it is a strong internal positive control for the pipeline as much as a biological result. The label-shuffling null (101 real meta hits → ~0.1 per shuffled permutation) confirms the q-values driving it are not a multiple-testing or degrees-of-freedom artifact.
+
+Many of the significant genera carry placeholder names (`UCG-005`, `Christensenellaceae R-7 group`, `NK4A214 group`, and numerous `Incertae Sedis` entries within Oscillospiraceae and Ruminococcaceae). This is a limit of genus-level 16S with incomplete reference taxonomy, and it caps how far the biological interpretation can go even for IBD.
+
+### The methodological findings
+
+Three results here are methodological, and are arguably more transferable than the biology:
+
+1. **Health labels in public microbiome metadata are not findable by any single rule.** The label audit catalogued six distinct naming families — from the MIxS `*_disord` fields, through semantically empty names like `group` and `category`, to labels sitting inside free-text `description` fields — and documented traps such as `none` meaning "no disorder" (a control) rather than missing data. Detection had to run three routes at once (generic name patterns, each study's own condition keywords, and value-vocabulary matching that ignores the field name) and still needed per-project human review. The cleaned label layer and its catalogue are a reusable artifact in their own right.
+2. **Meta-analysis-vs-pooled concordance works as a routine artifact filter.** Classifying each genus as *replicated* / *pooling-only* / *within-only*, rather than reporting a single list, is what separates the IBD result from the HIV over-count and the cancer anti-correlation.
+3. **The leave-one-project-out vs random-CV gap should be reported as standard.** It converts the abstract "batch effects" concern into a per-disease number, and here it shows that most apparent case/control predictability in this compendium is study recognition, not disease signal.
+
+### What this does not establish
+
+- **Nothing causal.** An elevated or depleted genus in a disease may be a consequence of the disease, its treatment, or an associated change in diet.
+- **Nothing about species or strains** — the resolution is genus only.
+- **Nothing outside a mostly Western population** (~61% Europe/North America, 36% United States).
+- **Nothing about the bulk of the compendium.** Roughly seven in eight samples carry no usable per-sample health label in the harmonised table. The disease analysis rests on 41 studies / ~14,000 samples; the broader 116-study labelled catalogue identified in the audit (~18.5% of samples, in principle) was scoped but not curated, so categories that are under-powered here — T1D, asthma — might be answerable with that extension.
+- **"Healthy" is each study's own definition,** harmonised at the word level only; the underlying clinical assessments are not comparable across studies.
 
