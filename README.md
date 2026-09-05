@@ -78,6 +78,12 @@ them in order; every phase reads the previous phase's output.
 | 4 | `04_variance.ipynb` | `src/variance.py` | transforms + harmonized metadata | `reports/variance_explained.csv`, `reports/variance_report.md`, `reports/project_classifier_cv.csv`, `reports/depth_alpha_association.csv`, `reports/figures/phase4_*.png` |
 | 5 | `05_differential.ipynb` | `src/differential.py` | `abund_clr.parquet`, cohorts | `reports/differential_{per_project,meta,pooled}.csv`, `reports/concordance.csv`, `reports/classifier_cv.csv`, `reports/differential_report.md`, `reports/figures/phase5_*.png` |
 | 6 | `06_validation.ipynb` | `src/validation.py` | Phase 5 artifacts + cohorts | `reports/validation_*.csv`, `reports/literature_crosscheck.csv`, `reports/final_report.md`, `reports/figures/phase6_*.png` |
+| — | `07_experiment.ipynb` | `src/variance.py` | `abund_clr.parquet` + harmonized metadata | `reports/experiment_heldout_guesses.csv`, `reports/figures/experiment_project_guessing.png` |
+
+`07_experiment.ipynb` is optional and standalone — it re-runs just the Phase 4
+"guess the study of origin from one sample's composition" classifier (linear +
+MLP, cross-validated), then inspects the per-sample guesses. Nothing downstream
+reads its output.
 
 **Design notes.** No cohort's membership is ever read from `projects.csv.condition`
 (that field misdescribes its own contents in both directions); membership comes
@@ -138,6 +144,7 @@ All committed under [`reports/`](reports/):
 | `cohort_flow.md` / `project_summary.csv` | 2 | CONSORT-style QC exclusion flow; per-project summary |
 | `variance_report.md` / `variance_explained.csv` | 4 | marginal + sequential PERMANOVA, depth vs alpha diversity |
 | `project_classifier_cv.csv` | 4 | PyTorch project-predictability negative control (linear + MLP) |
+| `experiment_heldout_guesses.csv` | — | `07_experiment.ipynb`: per-sample true vs predicted study of origin on a held-out split |
 | `differential_report.md` | 5 | within-study meta-analysis hits, concordance, batch-leakage |
 | `differential_{per_project,meta,pooled}.csv` | 5 | per-project contrasts, DerSimonian-Laird meta-analysis, naive pooled + ComBat/mixedlm |
 | `concordance.csv` | 5 | every genus classified *replicated* / *pooling-only* / *within-only* |
