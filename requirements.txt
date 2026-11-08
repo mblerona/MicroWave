@@ -21,3 +21,10 @@ torch
 # Optional — only needed if differential abundance testing uses the R
 # implementations (ANCOM-BC / ALDEx2) instead of the Python fallback
 # rpy2
+
+# Graph extension — PyTorch Geometric for the GNN models. pyg_lib is the
+# neighbour-sampling backend; torch_scatter / torch_sparse are not needed
+# (no wheels for torch 2.14 on Windows, and PyG 2.8 runs without them):
+#   pip install torch_geometric
+#   pip install pyg_lib -f https://data.pyg.org/whl/torch-2.14.0+cpu.html
+torch_geometric

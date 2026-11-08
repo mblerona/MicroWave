@@ -69,3 +69,28 @@ validation:                  # re-run the disease-association chain under varied
   depth_thresholds: [5000, 10000, 20000]   # minimum-reads cuts to rebuild the cohort at
   prevalence_tiers: [0.01, 0.10]            # compendium-wide taxon-prevalence universe
   literature_top_n: 25           # top replicated hits per disease to cross-check against priors
+
+graph:                          # relational / GNN extension
+  taxa_universe: clr            # the 419 prevalence-filtered CLR columns
+  variants: [G1, G2, G3]
+  knn_k: 10                     # sample–sample edges, G2 only (the leakage probe)
+  knn_metric: aitchison
+  edge_weight: log1p_relative   # non-negative; signed CLR rides as an edge attribute
+  taxon_embed_dim: 64
+  models:
+    graphsage: {layers: 2, hidden: 128, aggr: mean, dropout: 0.3}
+    gat:       {layers: 2, heads: 4, hidden: 32, dropout: 0.3, edge_dim: 3}
+    gcn:       {layers: 3, hidden: 128, dropout: 0.3}   # per-sample taxonomy graphs
+    mlp_control: {match_params_to: graphsage, tolerance: 0.10}
+  readout: [mean, max, attention]        # per-sample graph-level pooling
+  train: {epochs: 60, batch_size: 256, lr: 0.001, weight_decay: 5.0e-4, patience: 10}
+  neighbor_sampling: [15, 10]            # fan-out per layer, one-big-graph mini-batches
+  pretrain:
+    enabled: true
+    population: qc_passed               # all 116,656 — the unlabelled 87% included
+    epochs: 20
+    neg_sampling_ratio: 1.0
+    finetune: full                      # alternative: frozen
+  controls: [logreg, gboost, mlp_matched, shuffled_taxonomy]
+  cv_schemes: [leave_project_out, random_kfold]
+  random_kfold_folds: 5
