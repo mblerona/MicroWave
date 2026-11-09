@@ -90,7 +90,13 @@ graph:                          # relational / GNN extension
     population: qc_passed               # all 116,656 — the unlabelled 87% included
     epochs: 20
     neg_sampling_ratio: 1.0
+    mask_frac: 0.15                     # share of abundance edges hidden and reconstructed per step
     finetune: full                      # alternative: frozen
   controls: [logreg, gboost, mlp_matched, shuffled_taxonomy]
   cv_schemes: [leave_project_out, random_kfold]
   random_kfold_folds: 5
+  overfit_check:                         # model sanity: each model must memorise a tiny subset
+    n_samples: 200                       # balanced, 100 case + 100 control
+    epochs: 100
+    lr: 0.003                            # a capacity check, not a tuned run
+    min_train_auc: 0.95
