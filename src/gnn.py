@@ -30,6 +30,7 @@ baselines are the existing `src.differential` ones.
 `(x, y)` tensor pair (flat MLP).
 """
 import copy
+import time
 
 import numpy as np
 import pandas as pd
@@ -374,6 +375,28 @@ def restrict_to_samples(data, sample_idx):
     return data.subgraph({"sample": torch.as_tensor(sample_idx, dtype=torch.long)})
 
 
+def receivers_only(data, train_idx):
+    """Copy of `data` in which only training samples send messages: every
+    edge whose source is a non-training sample is dropped. Held-out samples
+    keep their incoming edges (their own taxa, their project), so they can
+    still be embedded, but nothing about them reaches any other node -- a
+    held-out prediction depends on its own composition and the training
+    samples only. One such graph serves both training and evaluation."""
+    out = copy.copy(data)
+    is_train = torch.zeros(data["sample"].num_nodes, dtype=torch.bool)
+    is_train[torch.as_tensor(train_idx, dtype=torch.long)] = True
+    for et in data.edge_types:
+        if et[0] != "sample":
+            continue
+        keep = is_train[data[et].edge_index[0]]
+        for key, value in data[et].items():
+            if torch.is_tensor(value) and value.dim() > 0 and key != "edge_index" \
+                    and value.shape[0] == keep.shape[0]:
+                out[et][key] = value[keep]
+        out[et].edge_index = data[et].edge_index[:, keep]
+    return out
+
+
 def scale_sample_features(data, train_idx):
     """Copy of `data` with sample features standardised by mean / sd of the
     training rows only."""
@@ -476,3 +499,133 @@ def tensor_loader(X, y, *, batch_size, shuffle):
     ds = TensorDataset(torch.as_tensor(np.asarray(X), dtype=torch.float32),
                        torch.as_tensor(np.asarray(y)))
     return DataLoader(ds, batch_size=batch_size, shuffle=shuffle)
+
+
+# ---------------------------------------------------------------------------
+# Project-prediction cross-validation (one big graph)
+# ---------------------------------------------------------------------------
+
+def project_folds(project_labels, seed, *, n_splits=5, min_project_size=25):
+    """The exact folds `variance.run_project_cv` uses: drop projects below
+    `min_project_size`, label-encode, `StratifiedKFold(shuffle, seed)`. The
+    split depends only on the labels, so a GNN scored on these folds is
+    scored on the same test samples as the committed flat baselines.
+    Returns (keep mask, encoded y over kept rows, class names, folds)."""
+    from sklearn.model_selection import StratifiedKFold
+    from sklearn.preprocessing import LabelEncoder
+
+    labels = np.asarray(project_labels)
+    vc = pd.Series(labels).value_counts()
+    keep = np.isin(labels, vc[vc >= min_project_size].index)
+    le = LabelEncoder()
+    y = le.fit_transform(labels[keep])
+    skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=seed)
+    return keep, y, le.classes_, list(skf.split(np.zeros(len(y)), y))
+
+
+def multiclass_scores(y_true, prob, n_classes):
+    """accuracy / balanced accuracy / top-5, as `variance.run_project_cv`
+    reports them."""
+    from sklearn.metrics import (accuracy_score, balanced_accuracy_score,
+                                 top_k_accuracy_score)
+
+    pred = prob.argmax(axis=1)
+    return dict(accuracy=accuracy_score(y_true, pred),
+                balanced_accuracy=balanced_accuracy_score(y_true, pred),
+                top5_accuracy=top_k_accuracy_score(y_true, prob, k=5,
+                                                   labels=np.arange(n_classes)))
+
+
+def graph_project_cv(make_graph, make_model, folds, n_classes, seed, *, epochs,
+                     batch_size, lr, weight_decay, neighbor_sampling, progress=True):
+    """Cross-validated project prediction with a one-big-graph model.
+
+    Per fold, `make_graph(train_idx)` returns the fold's `HeteroData`
+    (statistics fit on training rows, held-out samples as receivers only,
+    `sample.y` set) and `make_model(graph)` a fresh model; training and
+    scoring both run on that graph, seeded on the fold's own samples.
+    With `progress`, prints one line per finished fold -- a fold takes
+    minutes, and a plain line survives logging where a progress bar doesn't.
+    Returns one row per fold."""
+    rows = []
+    for fold, (tr, te) in enumerate(folds):
+        t0 = time.time()
+        graph = make_graph(tr)
+        torch.manual_seed(seed + fold)
+        model = make_model(graph)
+        train_loader = sample_loader(graph, tr, batch_size=batch_size,
+                                     neighbor_sampling=neighbor_sampling, shuffle=True)
+        fit(model, train_loader, n_out=n_classes, epochs=epochs, lr=lr,
+            weight_decay=weight_decay, seed=seed + fold)
+        prob, y_te = predict(model, sample_loader(graph, te, batch_size=2048,
+                                                  neighbor_sampling=neighbor_sampling,
+                                                  shuffle=False))
+        rows.append(dict(fold=fold, **multiclass_scores(y_te, prob, n_classes),
+                         n_train=len(tr), n_test=len(te), n_params=count_parameters(model),
+                         seconds=round(time.time() - t0, 1)))
+        if progress:
+            r = rows[-1]
+            print(f"  fold {fold + 1}/{len(folds)}: accuracy {r['accuracy']:.4f}  "
+                  f"balanced {r['balanced_accuracy']:.4f}  top-5 {r['top5_accuracy']:.4f}  "
+                  f"[{r['seconds'] / 60:.1f} min]", flush=True)
+    return pd.DataFrame(rows)
+
+
+
+# colour encodes a model's role, not its identity: blue = flat model, orange =
+# graph model, hatched grey = the label is reachable inside the graph (a ceiling)
+ROLE_STYLE = {
+    "flat": dict(color="#2a78d6"),
+    "graph": dict(color="#eb6834"),
+    "label in graph": dict(color="#b5b4ae", hatch="///", edgecolor="#52514e"),
+}
+
+
+def plot_project_compare(summary, majority_baseline, *, committed=None):
+    """One panel per metric, one horizontal bar per model (mean, +/- sd over
+    folds), coloured by `role`. `summary` columns: model, role,
+    <metric>_mean, <metric>_std for accuracy / balanced_accuracy /
+    top5_accuracy. The majority-class rate is drawn on the accuracy panels;
+    `committed` (model -> committed accuracy) adds a tick for each flat
+    baseline's committed value, so a reproduction is visible at a glance."""
+    import matplotlib.pyplot as plt
+    from matplotlib.patches import Patch
+    from src import variance as var
+
+    var._style()
+    metrics = [("accuracy", "accuracy"), ("balanced_accuracy", "balanced accuracy"),
+               ("top5_accuracy", "top-5 accuracy")]
+    d = summary.iloc[::-1].reset_index(drop=True)  # first row on top
+    fig, axes = plt.subplots(1, 3, figsize=(13, 0.45 * len(d) + 1.8), sharey=True)
+    for ax, (m, label) in zip(axes, metrics):
+        for i, r in d.iterrows():
+            ax.barh(i, r[f"{m}_mean"], height=0.62, xerr=r[f"{m}_std"],
+                    error_kw=dict(ecolor="#52514e", lw=1, capsize=2),
+                    linewidth=0.8, **ROLE_STYLE[r["role"]])
+            ax.text(min(r[f"{m}_mean"] + r[f"{m}_std"] + 0.015, 0.99), i,
+                    f"{r[f'{m}_mean']:.3f}", va="center", fontsize=8, color="#0b0b0b")
+        if m == "accuracy" and committed:
+            for i, r in d.iterrows():
+                if r["model"] in committed:
+                    ax.plot([committed[r["model"]]] * 2, [i - 0.38, i + 0.38],
+                            color="#0b0b0b", lw=1.5)
+        if m in ("accuracy", "balanced_accuracy"):
+            ax.axvline(majority_baseline, color="#52514e", ls="--", lw=1)
+        ax.set_xlim(0, 1.08)
+        ax.set_title(label)
+        ax.grid(axis="y", visible=False)
+    axes[0].set_yticks(range(len(d)))
+    axes[0].set_yticklabels(d["model"])
+    handles = [Patch(label=k, **v) for k, v in ROLE_STYLE.items() if k in set(d["role"])]
+    handles.append(plt.Line2D([], [], color="#52514e", ls="--",
+                              label=f"majority class ({majority_baseline:.3f})"))
+    if committed:
+        handles.append(plt.Line2D([], [], color="#0b0b0b", lw=1.5,
+                                  label="committed Phase 4 value"))
+    fig.legend(handles=handles, loc="lower center", ncol=len(handles), fontsize=8,
+               frameon=False, bbox_to_anchor=(0.5, -0.02))
+    fig.suptitle("Which study did a sample come from? Flat models vs the graph",
+                 fontweight="bold")
+    fig.tight_layout(rect=(0, 0.05, 1, 1))
+    return fig
+
