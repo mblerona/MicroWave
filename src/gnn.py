@@ -572,6 +572,137 @@ def graph_project_cv(make_graph, make_model, folds, n_classes, seed, *, epochs,
 
 
 
+# ---------------------------------------------------------------------------
+# Disease cross-validation (one big graph)
+# ---------------------------------------------------------------------------
+
+def disease_folds(y, groups, seed, *, n_splits=5):
+    """The two split schemes `differential.batch_leakage_cv` uses, built the
+    same way so each fold holds the same test samples as the committed
+    flat baselines: `leave_project_out` (one fold per project) and
+    `random_kfold` (stratified, k = min(n_splits, smaller class count))."""
+    from sklearn.model_selection import LeaveOneGroupOut, StratifiedKFold
+
+    y = np.asarray(y)
+    zeros = np.zeros(len(y))
+    schemes = {"leave_project_out": list(LeaveOneGroupOut().split(zeros, y, groups))}
+    k = int(min(n_splits, np.bincount(y).min()))
+    if k >= 2:
+        schemes["random_kfold"] = list(
+            StratifiedKFold(n_splits=k, shuffle=True, random_state=seed).split(zeros, y))
+    return schemes
+
+
+# How a fold's graph is used. Strict to leaky:
+# - inductive: held-out samples only receive (`receivers_only`).
+# - transductive: held-out samples stay in the graph and send messages; only
+#   their labels are hidden. Their *features* reach other nodes, never labels.
+# - transductive_labels: as transductive, plus every training sample's label
+#   is an input feature (the "label as feature" practice behind label
+#   propagation-style GNNs), so a held-out sample can read its neighbours'
+#   labels.
+PROTOCOLS = ("inductive", "transductive", "transductive_labels")
+
+
+def with_label_features(x, y, known_idx):
+    """`x` with two columns appended: `label_known` (1 for rows in
+    `known_idx`) and `label_value` (their label, 0 elsewhere). Rows outside
+    `known_idx` look exactly like unlabelled samples."""
+    known = torch.zeros(x.shape[0], 1)
+    value = torch.zeros(x.shape[0], 1)
+    idx = torch.as_tensor(known_idx, dtype=torch.long)
+    known[idx] = 1.0
+    value[idx, 0] = torch.as_tensor(np.asarray(y)[known_idx], dtype=torch.float32)
+    return torch.cat([x, known, value], dim=1)
+
+
+def fit_label_trick(model, graph, train_idx, y, *, epochs, batch_size, lr, weight_decay,
+                    neighbor_sampling, seed, pos_weight=None):
+    """Training for `transductive_labels`. A sample must never see its own
+    label, so each epoch the training samples are split at random in half:
+    one half supplies its labels as input features, the other half are the
+    loss targets with their label columns blanked. `graph["sample"].x` is the
+    label-free features; it is restored before returning."""
+    torch.manual_seed(seed)
+    rng = np.random.default_rng(seed)
+    base_x = graph["sample"].x
+    loss_fn = _loss_fn(1, None if pos_weight is None else torch.tensor(float(pos_weight)))
+    optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
+    train_idx = np.asarray(train_idx)
+    for _ in range(epochs):
+        perm = rng.permutation(train_idx)
+        known, target = perm[: len(perm) // 2], perm[len(perm) // 2:]
+        graph["sample"].x = with_label_features(base_x, y, known)
+        model.train()
+        for batch in sample_loader(graph, target, batch_size=batch_size,
+                                   neighbor_sampling=neighbor_sampling, shuffle=True):
+            optimizer.zero_grad()
+            logits, yb = _logits_and_targets(model, batch)
+            loss_fn(logits, yb).backward()
+            optimizer.step()
+    graph["sample"].x = base_x
+    return model
+
+
+def graph_disease_cv(make_graph, make_model, schemes, y, groups, seed, *, epochs,
+                     batch_size, lr, weight_decay, neighbor_sampling, protocol="inductive"):
+    """Case/control classification with a one-big-graph model, per fold of
+    every scheme in `schemes` (from `disease_folds`). `make_graph(train_idx)`
+    returns the fold's graph with statistics fit on the training rows;
+    `protocol` (one of `PROTOCOLS`) decides what held-out samples may do in
+    it. `make_model(graph)` returns a fresh binary model. The loss is
+    reweighted by n_control / n_case of the training rows, as
+    `class_weight="balanced"` is for the logistic-regression baseline.
+    Folds whose test set holds a single class are skipped, as in the flat
+    baseline. Returns one row per (scheme, fold): AUC, balanced accuracy at
+    0.5, sizes, test project."""
+    from sklearn.metrics import balanced_accuracy_score, roc_auc_score
+
+    if protocol not in PROTOCOLS:
+        raise ValueError(f"unknown protocol {protocol!r}")
+    y = np.asarray(y)
+    groups = np.asarray(groups)
+    rows = []
+    for scheme, folds in schemes.items():
+        for fold, (tr, te) in enumerate(folds):
+            if len(np.unique(y[tr])) < 2 or len(np.unique(y[te])) < 2:
+                continue
+            t0 = time.time()
+            graph = make_graph(tr)
+            if protocol == "inductive":
+                graph = receivers_only(graph, tr)
+            if protocol == "transductive_labels":
+                # label columns present (all unknown) so the model is built
+                # for the input width it will be trained and scored with
+                base_x = graph["sample"].x
+                graph["sample"].x = with_label_features(base_x, y, [])
+            torch.manual_seed(seed + fold)
+            model = make_model(graph)
+            pos_weight = (y[tr] == 0).sum() / max((y[tr] == 1).sum(), 1)
+            train_kw = dict(epochs=epochs, lr=lr, weight_decay=weight_decay,
+                            seed=seed + fold, pos_weight=pos_weight)
+            if protocol == "transductive_labels":
+                graph["sample"].x = base_x
+                fit_label_trick(model, graph, tr, y, batch_size=batch_size,
+                                neighbor_sampling=neighbor_sampling, **train_kw)
+                # scoring: every training label is known, no held-out one is
+                graph["sample"].x = with_label_features(base_x, y, tr)
+            else:
+                fit(model, sample_loader(graph, tr, batch_size=batch_size,
+                                         neighbor_sampling=neighbor_sampling, shuffle=True),
+                    n_out=1, **train_kw)
+            prob, y_te = predict(model, sample_loader(graph, te, batch_size=2048,
+                                                      neighbor_sampling=neighbor_sampling,
+                                                      shuffle=False))
+            rows.append(dict(
+                cv_scheme=scheme, fold=fold, auc=float(roc_auc_score(y_te, prob)),
+                balanced_accuracy=float(balanced_accuracy_score(y_te, (prob >= 0.5).astype(int))),
+                n_train=len(tr), n_test=len(te), n_test_pos=int(y_te.sum()),
+                test_project=str(groups[te][0]) if scheme == "leave_project_out" else "",
+                seconds=round(time.time() - t0, 1)))
+    return pd.DataFrame(rows)
+
+
 # colour encodes a model's role, not its identity: blue = flat model, orange =
 # graph model, hatched grey = the label is reachable inside the graph (a ceiling)
 ROLE_STYLE = {
@@ -629,3 +760,82 @@ def plot_project_compare(summary, majority_baseline, *, committed=None):
     fig.tight_layout(rect=(0, 0.05, 1, 1))
     return fig
 
+
+
+LEAKAGE_STYLE = {
+    "G1": dict(color="#2a78d6"),
+    "G2": dict(color="#eb6834"),
+    "G2_filtered": dict(color="#1baf7a"),
+    "G3": dict(color="#b5b4ae", hatch="///", edgecolor="#52514e"),
+}
+LEAKAGE_LABEL = {
+    "G1": "G1: samples + taxa + taxonomy",
+    "G2": "G2: G1 + k-NN sample edges",
+    "G2_filtered": "G2 with same-study edges deleted",
+    "G3": "G3: G1 + study nodes",
+}
+
+
+PROTOCOL_TITLE = {
+    "inductive": "inductive: held-out samples only receive",
+    "transductive": "transductive: held-out samples also send features",
+    "transductive_labels": "transductive + training labels as input",
+}
+
+
+def plot_leakage_gap(summary, flat=None):
+    """Grouped bars of mean AUC per disease, one bar per graph variant; one
+    column per CV scheme (leave-one-project-out first) and, when `summary`
+    has a `protocol` column, one row per protocol. `summary` columns:
+    disease_category, cv_scheme, graph, auc_mean, auc_seed_sd[, protocol].
+    `flat` (optional: disease_category, cv_scheme, auc) draws the committed
+    flat logistic-regression AUC as a tick over each disease group."""
+    import matplotlib.pyplot as plt
+    from matplotlib.patches import Patch
+    from src import variance as var
+
+    var._style()
+    if "protocol" not in summary.columns:
+        summary = summary.assign(protocol="inductive")
+    protocols = [p for p in PROTOCOLS if p in set(summary["protocol"])]
+    schemes = [("leave_project_out", "leave-one-project-out (honest)"),
+               ("random_kfold", "random k-fold (studies shared)")]
+    graphs = [g for g in LEAKAGE_STYLE if g in set(summary["graph"])]
+    cats = sorted(summary["disease_category"].unique())
+    width = 0.8 / len(graphs)
+    fig, axes = plt.subplots(len(protocols), 2, figsize=(14, 4.2 * len(protocols) + 0.6),
+                             sharey=True, squeeze=False)
+    for row, protocol in enumerate(protocols):
+        for ax, (scheme, title) in zip(axes[row], schemes):
+            d = summary[(summary["cv_scheme"] == scheme) & (summary["protocol"] == protocol)]
+            d = d.set_index(["disease_category", "graph"])
+            for j, g in enumerate(graphs):
+                xs = np.arange(len(cats)) + (j - (len(graphs) - 1) / 2) * width
+                vals = [d["auc_mean"].get((c, g), np.nan) for c in cats]
+                errs = [d["auc_seed_sd"].get((c, g), 0.0) for c in cats]
+                ax.bar(xs, vals, width * 0.92, yerr=errs, linewidth=0.8,
+                       error_kw=dict(ecolor="#52514e", lw=1, capsize=2), **LEAKAGE_STYLE[g])
+            if flat is not None:
+                f = flat[flat["cv_scheme"] == scheme].set_index("disease_category")["auc"]
+                for i, c in enumerate(cats):
+                    if c in f.index:
+                        ax.plot([i - 0.42, i + 0.42], [f[c]] * 2, color="#0b0b0b", lw=1.5)
+            ax.axhline(0.5, color="#52514e", ls="--", lw=1)
+            ax.set_xticks(range(len(cats)))
+            ax.set_xticklabels(cats)
+            ax.set_ylim(0.3, 1.0)
+            ax.set_title(f"{title}\n{PROTOCOL_TITLE[protocol]}", fontsize=10)
+            ax.grid(axis="x", visible=False)
+        axes[row, 0].set_ylabel("AUC (mean over folds and seeds)")
+    handles = [Patch(label=LEAKAGE_LABEL[g], **LEAKAGE_STYLE[g]) for g in graphs]
+    handles.append(plt.Line2D([], [], color="#52514e", ls="--", label="chance"))
+    if flat is not None:
+        handles.append(plt.Line2D([], [], color="#0b0b0b", lw=1.5,
+                                  label="committed flat logistic regression"))
+    legend_h = 0.6 / fig.get_figheight()
+    fig.legend(handles=handles, loc="lower center", ncol=3, fontsize=8, frameon=False,
+               bbox_to_anchor=(0.5, 0.0))
+    fig.suptitle("Does building a graph leak the study into a disease classifier?",
+                 fontweight="bold")
+    fig.tight_layout(rect=(0, legend_h, 1, 1))
+    return fig

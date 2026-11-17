@@ -95,6 +95,10 @@ graph:                          # relational / GNN extension
   controls: [logreg, gboost, mlp_matched, shuffled_taxonomy]
   cv_schemes: [leave_project_out, random_kfold]
   random_kfold_folds: 5
+  leakage:                               # graph-leakage experiment: same disease model, four graphs
+    variants: [G1, G2, G2_filtered, G3]  # G2_filtered = G2 with same-project k-NN edges deleted
+    seeds: [42, 43, 44]                  # gaps are ~0.01; seed noise has to be measured, not assumed
+    protocols: [inductive, transductive, transductive_labels]   # strict -> leaky use of the same graph
   overfit_check:                         # model sanity: each model must memorise a tiny subset
     n_samples: 200                       # balanced, 100 case + 100 control
     epochs: 100
