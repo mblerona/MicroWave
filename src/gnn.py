@@ -593,6 +593,31 @@ def disease_folds(y, groups, seed, *, n_splits=5):
     return schemes
 
 
+def binary_cv(run_fold, schemes, y, groups):
+    """The fold loop of `graph_disease_cv` for any model: `run_fold(train_idx,
+    test_idx, fold)` trains a fresh model and returns P(case) for the test
+    rows. Same skipping rule and output columns, so per-sample graphs, flat
+    MLPs and one-big-graph models land in one comparable table."""
+    from sklearn.metrics import balanced_accuracy_score, roc_auc_score
+
+    y = np.asarray(y)
+    groups = np.asarray(groups)
+    rows = []
+    for scheme, folds in schemes.items():
+        for fold, (tr, te) in enumerate(folds):
+            if len(np.unique(y[tr])) < 2 or len(np.unique(y[te])) < 2:
+                continue
+            t0 = time.time()
+            prob = np.asarray(run_fold(tr, te, fold))
+            rows.append(dict(
+                cv_scheme=scheme, fold=fold, auc=float(roc_auc_score(y[te], prob)),
+                balanced_accuracy=float(balanced_accuracy_score(y[te], (prob >= 0.5).astype(int))),
+                n_train=len(tr), n_test=len(te), n_test_pos=int(y[te].sum()),
+                test_project=str(groups[te][0]) if scheme == "leave_project_out" else "",
+                seconds=round(time.time() - t0, 1)))
+    return pd.DataFrame(rows)
+
+
 # How a fold's graph is used. Strict to leaky:
 # - inductive: held-out samples only receive (`receivers_only`).
 # - transductive: held-out samples stay in the graph and send messages; only

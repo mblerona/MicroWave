@@ -99,6 +99,12 @@ graph:                          # relational / GNN extension
     variants: [G1, G2, G2_filtered, G3]  # G2_filtered = G2 with same-project k-NN edges deleted
     seeds: [42, 43, 44]                  # gaps are ~0.01; seed noise has to be measured, not assumed
     protocols: [inductive, transductive, transductive_labels]   # strict -> leaky use of the same graph
+  disease:                               # case/control experiment: graph models vs flat baselines and controls
+    categories: [IBD, HIV, NAFLD, T1D, asthma, cancer_other]   # IBD primary, HIV + NAFLD secondary, the rest for completeness
+    seeds: [42, 43, 44]
+    models: [gcn, gcn_shuffled, sage_g1, gat_g1, mlp_gcn, mlp_sage, mlp_gat]
+    parallel_jobs: 3                     # one GCN job uses a fraction of the CPU; 3 at once ~1.6x throughput
+    threads_per_job: 4
   overfit_check:                         # model sanity: each model must memorise a tiny subset
     n_samples: 200                       # balanced, 100 case + 100 control
     epochs: 100
