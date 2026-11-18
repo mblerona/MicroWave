@@ -87,11 +87,17 @@ graph:                          # relational / GNN extension
   neighbor_sampling: [15, 10]            # fan-out per layer, one-big-graph mini-batches
   pretrain:
     enabled: true
-    population: qc_passed               # all 116,656 — the unlabelled 87% included
+    population: unlabelled              # QC-passed samples outside every disease cohort: no test sample is seen
     epochs: 20
-    neg_sampling_ratio: 1.0
+    neg_sampling_ratio: 1               # matched absent pairs per hidden edge
     mask_frac: 0.15                     # share of abundance edges hidden and reconstructed per step
-    finetune: full                      # alternative: frozen
+    eval_frac: 0.02                     # samples whose hidden edges are kept out to score reconstruction
+    lr: 0.001
+    batch_size: 256
+    threads: 8
+    seed: 42                            # one encoder; downstream seeds vary the head and training order
+    finetune: [full, frozen]
+    models: [sage_g1_pt_full, sage_g1_pt_frozen]   # compared with sage_g1 on the same folds and seeds
   controls: [logreg, gboost, mlp_matched, shuffled_taxonomy]
   cv_schemes: [leave_project_out, random_kfold]
   random_kfold_folds: 5

@@ -260,14 +260,21 @@ def mask_abundance_edges(data, mask_frac, generator):
     perm = torch.randperm(e, generator=generator)
     n_mask = max(1, int(round(mask_frac * e)))
     masked, kept = perm[:n_mask], perm[n_mask:]
+    return (keep_abundance_edges(data, kept),
+            data[ABUNDANCE].edge_index[:, masked], data[ABUNDANCE].edge_weight[masked])
 
+
+def keep_abundance_edges(data, kept):
+    """Copy of `data` with only the abundance edges `kept` (indices or a
+    boolean mask), in both directions. The two directions are stored in the
+    same order, so one index selects an edge and its reverse."""
     out = copy.copy(data)
     for et in (ABUNDANCE, REV_ABUNDANCE):
         store = data[et]
+        for key in ("edge_weight", "edge_attr"):
+            out[et][key] = store[key][kept]
         out[et].edge_index = store.edge_index[:, kept]
-        out[et].edge_weight = store.edge_weight[kept]
-        out[et].edge_attr = store.edge_attr[kept]
-    return out, data[ABUNDANCE].edge_index[:, masked], data[ABUNDANCE].edge_weight[masked]
+    return out
 
 
 def sample_negative_pairs(edge_index, n_samples, n_taxa, n, generator):
@@ -298,6 +305,199 @@ def gae_loss(model, data, *, mask_frac, neg_ratio, generator):
     loss = (F.mse_loss(weight_pred[:pos.shape[1]], pos_w)
             + F.binary_cross_entropy_with_logits(exist_logit, labels))
     return loss, exist_logit, labels
+
+
+def _is_edge(keys_sorted, keys):
+    pos = torch.searchsorted(keys_sorted, keys).clamp_max(len(keys_sorted) - 1)
+    return keys_sorted[pos] == keys
+
+
+def matched_negatives(pos, n_taxa, keys_sorted, generator, *, ratio=1, max_tries=100):
+    """`ratio` absent pairs per positive (sample, taxon) pair, each with the
+    positive's own sample and a random taxon that sample does not carry --
+    so a decoder cannot separate the classes by sample alone (e.g. by how
+    many taxa it has). `keys_sorted` = sorted `sample * n_taxa + taxon` of
+    every abundance edge, masked ones included."""
+    s = pos[0].repeat(ratio)
+    t = torch.randint(n_taxa, (len(s),), generator=generator)
+    bad = _is_edge(keys_sorted, s * n_taxa + t)
+    for _ in range(max_tries):
+        if not bad.any():
+            break
+        t[bad] = torch.randint(n_taxa, (int(bad.sum()),), generator=generator)
+        bad = _is_edge(keys_sorted, s * n_taxa + t)
+    return torch.stack([s[~bad], t[~bad]])
+
+
+def _local_pairs(batch, pairs, n_samples, n_taxa):
+    """Global (sample, taxon) pairs whose sample is a seed of `batch` and
+    whose taxon is in it, re-indexed into the batch. Returns (local pairs,
+    boolean mask over `pairs`)."""
+    def lookup(n_id, size):
+        loc = torch.full((size,), -1, dtype=torch.long)
+        loc[n_id] = torch.arange(len(n_id))
+        return loc
+
+    s = lookup(batch["sample"].n_id[: batch["sample"].batch_size], n_samples)[pairs[0]]
+    t = lookup(batch["taxon"].n_id, n_taxa)[pairs[1]]
+    keep = (s >= 0) & (t >= 0)
+    return torch.stack([s[keep], t[keep]]), keep
+
+
+def _reconstruction_pass(model, loader, pos, pos_w, neg, n_samples, n_taxa, optimizer=None):
+    """One pass over `loader`: each batch is scored on the masked positives
+    and negatives whose sample is one of its seeds. Trains when `optimizer`
+    is given. Returns (mean loss, existence logits, existence labels,
+    weight predictions, weight targets)."""
+    totals, n, out = 0.0, 0, ([], [], [], [])
+    for batch in loader:
+        p, keep_p = _local_pairs(batch, pos, n_samples, n_taxa)
+        q, _ = _local_pairs(batch, neg, n_samples, n_taxa)
+        if p.shape[1] == 0:
+            continue
+        exist_logit, weight_pred = model(batch, torch.cat([p, q], dim=1))
+        labels = torch.cat([torch.ones(p.shape[1]), torch.zeros(q.shape[1])])
+        target = pos_w[keep_p]
+        loss = (F.mse_loss(weight_pred[: p.shape[1]], target)
+                + F.binary_cross_entropy_with_logits(exist_logit, labels))
+        if optimizer is not None:
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+        totals += float(loss.detach()) * len(labels)
+        n += len(labels)
+        for lst, v in zip(out, (exist_logit, labels, weight_pred[: p.shape[1]], target)):
+            lst.append(v.detach())
+    return (totals / max(n, 1), *(torch.cat(v) for v in out))
+
+
+def pretrain_graph_autoencoder(graph, *, encoder_kwargs, epochs, batch_size, lr,
+                               weight_decay, mask_frac, neg_ratio, neighbor_sampling,
+                               eval_frac, seed, log=print):
+    """Pretrain a `HeteroSAGE` encoder on `graph` (a G1 without labels) by
+    masked abundance-edge reconstruction.
+
+    Each epoch hides a fresh `mask_frac` of the training samples' abundance
+    edges; for every hidden edge the model must say that it exists (against
+    one matched absent pair, `matched_negatives`) and predict its weight.
+
+    A fixed `eval_frac` of the samples are evaluation samples: `mask_frac` of
+    their edges are removed for the whole run and never trained on, and they
+    are never batch seeds in training. Their remaining edges stay in the
+    graph as context, as a new sample's would. They are scored after every
+    epoch, beside two baselines that know nothing about the sample: a
+    taxon's prevalence (existence AUC) and its mean weight (weight MSE).
+
+    Returns (encoder, per-epoch history frame, baseline dict)."""
+    from sklearn.metrics import roc_auc_score
+
+    torch.manual_seed(seed)
+    gen = torch.Generator().manual_seed(seed)
+    n_s, n_t = graph["sample"].num_nodes, graph["taxon"].num_nodes
+    ei, w = graph[ABUNDANCE].edge_index, graph[ABUNDANCE].edge_weight
+    keys_sorted = (ei[0] * n_t + ei[1]).sort().values
+
+    n_eval = max(1, int(round(eval_frac * n_s)))
+    is_eval = torch.zeros(n_s, dtype=torch.bool)
+    is_eval[torch.randperm(n_s, generator=gen)[:n_eval]] = True
+    held = is_eval[ei[0]] & (torch.rand(ei.shape[1], generator=gen) < mask_frac)
+    eval_pos, eval_w = ei[:, held], w[held]
+    eval_neg = matched_negatives(eval_pos, n_t, keys_sorted, gen, ratio=neg_ratio)
+    base = keep_abundance_edges(graph, ~held)
+    train_samples = torch.nonzero(~is_eval).squeeze(1)
+    eval_samples = torch.nonzero(is_eval).squeeze(1)
+
+    # sample-blind baselines, fit on the edges the model can see
+    b_ei, b_w = base[ABUNDANCE].edge_index, base[ABUNDANCE].edge_weight
+    prevalence = torch.bincount(b_ei[1], minlength=n_t).float() / n_s
+    mean_w = (torch.zeros(n_t).index_add_(0, b_ei[1], b_w)
+              / torch.bincount(b_ei[1], minlength=n_t).clamp_min(1))
+    eval_pairs = torch.cat([eval_pos, eval_neg], dim=1)
+    eval_labels = torch.cat([torch.ones(eval_pos.shape[1]), torch.zeros(eval_neg.shape[1])])
+    baselines = dict(
+        exist_auc_prevalence=float(roc_auc_score(eval_labels, prevalence[eval_pairs[1]])),
+        weight_mse_taxon_mean=float(F.mse_loss(mean_w[eval_pos[1]], eval_w)),
+        n_eval_samples=n_eval, n_eval_edges=int(eval_pos.shape[1]))
+
+    model = GraphAutoencoder(HeteroSAGE(base, 1, **encoder_kwargs))
+    base_idx = torch.nonzero(~held).squeeze(1)
+    trainable = ~is_eval[ei[0, base_idx]]
+    eval_loader = sample_loader(base, eval_samples, batch_size=1024,
+                                neighbor_sampling=neighbor_sampling, shuffle=False)
+    optimizer, history = None, []
+    for epoch in range(epochs):
+        t0 = time.time()
+        cand = base_idx[trainable]
+        hide = torch.rand(len(cand), generator=gen) < mask_frac
+        keep = torch.ones(ei.shape[1], dtype=torch.bool)
+        keep[held] = False
+        keep[cand[hide]] = False
+        pos, pos_w = ei[:, cand[hide]], w[cand[hide]]
+        neg = matched_negatives(pos, n_t, keys_sorted, gen, ratio=neg_ratio)
+        loader = sample_loader(keep_abundance_edges(graph, keep), train_samples,
+                               batch_size=batch_size, neighbor_sampling=neighbor_sampling,
+                               shuffle=True)
+        if optimizer is None:  # lazy input layers get their size on the first batch
+            with torch.no_grad():
+                b = next(iter(loader))
+                model(b, torch.zeros(2, 1, dtype=torch.long))
+            optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
+        model.train()
+        train_loss = _reconstruction_pass(model, loader, pos, pos_w, neg, n_s, n_t, optimizer)[0]
+
+        model.eval()
+        with torch.no_grad():
+            eval_loss, logit, lab, wp, wt = _reconstruction_pass(
+                model, eval_loader, eval_pos, eval_w, eval_neg, n_s, n_t)
+        row = dict(epoch=epoch + 1, train_loss=train_loss, eval_loss=eval_loss,
+                   eval_exist_auc=float(roc_auc_score(lab, logit)),
+                   eval_weight_mse=float(F.mse_loss(wp, wt)),
+                   minutes=(time.time() - t0) / 60)
+        history.append(row)
+        log(f"epoch {row['epoch']:2d}/{epochs}  train loss {train_loss:.4f}  "
+            f"held-out: loss {eval_loss:.4f}, existence AUC {row['eval_exist_auc']:.3f}, "
+            f"weight MSE {row['eval_weight_mse']:.3f}  [{row['minutes']:.1f} min]")
+    return model.encoder, pd.DataFrame(history), baselines
+
+
+@torch.no_grad()
+def embed_samples(encoder, graph, sample_idx, *, neighbor_sampling, batch_size=2048):
+    """Encoder output for the given sample nodes, in the order given."""
+    encoder.eval()
+    parts = []
+    for batch in sample_loader(graph, sample_idx, batch_size=batch_size,
+                               neighbor_sampling=neighbor_sampling, shuffle=False):
+        parts.append(encoder.encode(batch)["sample"][: batch["sample"].batch_size])
+    return torch.cat(parts).numpy()
+
+
+def same_group_neighbour_rate(x, groups, k=10):
+    """Share of each row's `k` nearest neighbours (Euclidean) that carry its
+    own group, averaged over rows."""
+    from sklearn.neighbors import NearestNeighbors
+
+    groups = np.asarray(groups)
+    idx = NearestNeighbors(n_neighbors=k + 1).fit(x).kneighbors(x, return_distance=False)[:, 1:]
+    return float((groups[idx] == groups[:, None]).mean())
+
+
+def encoder_state(encoder):
+    """The pretrained encoder's weights without its (untrained) head."""
+    return {k: v for k, v in encoder.state_dict().items() if not k.startswith("head.")}
+
+
+def load_pretrained(model, state, *, frozen):
+    """Load `encoder_state` weights into a fresh `HeteroSAGE`; only the head
+    stays newly initialised. `frozen` stops the encoder from training, so
+    only the head learns (`fit` skips parameters without gradients)."""
+    missing, unexpected = model.load_state_dict(state, strict=False)
+    if unexpected or any(not k.startswith("head.") for k in missing):
+        raise ValueError(f"encoder mismatch: missing {missing}, unexpected {unexpected}")
+    if frozen:
+        for name, p in model.named_parameters():
+            if not name.startswith("head."):
+                p.requires_grad_(False)
+    return model
 
 
 # ---------------------------------------------------------------------------

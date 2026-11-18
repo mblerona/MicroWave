@@ -20,6 +20,11 @@ Models (`MODELS`):
 - `mlp_gcn`, `mlp_sage`, `mlp_gat` -- a flat MLP on the 419 CLR features with
   the parameter count of the named graph model. If it ties the graph model,
   the gain was capacity, not structure.
+- `sage_g1_pt_full`, `sage_g1_pt_frozen` -- `sage_g1` started from the
+  encoder pretrained without labels (`gnn.pretrain_graph_autoencoder`, the
+  checkpoint at `PRETRAINED_ENCODER`), then either fine-tuned whole or with
+  the encoder frozen so only the head learns. Compared with `sage_g1` on the
+  same folds and seeds, they measure what the unlabelled samples add.
 
 The flat logistic-regression and boosting baselines are
 `differential.batch_leakage_cv`, run as committed.
@@ -37,9 +42,12 @@ from src import graphs as gr
 from src import variance as var
 
 MODELS = ("gcn", "gcn_shuffled", "sage_g1", "gat_g1", "mlp_gcn", "mlp_sage", "mlp_gat")
+PRETRAINED_MODELS = {"sage_g1_pt_full": False, "sage_g1_pt_frozen": True}  # name -> frozen
 FRAMING = {"gcn": "per-sample graph", "gcn_shuffled": "per-sample graph",
            "sage_g1": "one big graph", "gat_g1": "one big graph",
+           "sage_g1_pt_full": "one big graph", "sage_g1_pt_frozen": "one big graph",
            "mlp_gcn": "flat", "mlp_sage": "flat", "mlp_gat": "flat"}
+PRETRAINED_ENCODER = Path("data") / "processed" / "gae_encoder.pt"
 
 
 def run_path(run_dir, category, model, seed):
@@ -74,6 +82,35 @@ def category_data(root, params, category):
         sample_x=sx, sample_feature_names=names,
         schemes=gnn.disease_folds(y, projects, params["seed"],
                                   n_splits=params["differential"]["batch_leakage"]["cv_folds"]))
+
+
+def pretraining_graph(root, params):
+    """G1 over the pretraining population: every QC-passed sample that is in
+    no disease cohort, so no sample the disease models are ever tested on
+    reaches the encoder, not even without its label. Taxon statistics and
+    sample-feature scaling are fit on this population. Returns (graph,
+    samples, number of excluded cohort samples)."""
+    root = Path(root)
+    interim, processed = root / "data" / "interim", root / "data" / "processed"
+    clr_path, rel_path = processed / "abund_clr.parquet", processed / "abund_relative.parquet"
+
+    cohort = pd.read_parquet(processed / "cohort_within_project.parquet")
+    labelled = set(diff.sample_keys(cohort))
+    every = pq.read_table(clr_path, columns=[gr.SAMPLE_COL]).column(0).to_pylist()
+    samples = [s for s in every if s not in labelled]
+
+    taxa = [c for c in pq.ParquetFile(clr_path).schema.names if c != gr.SAMPLE_COL]
+    taxonomy = gr.build_taxonomy_edges(pd.read_parquet(interim / "taxon_table.parquet"), taxa)
+    bipartite = gr.build_bipartite_edges(rel_path, clr_path, samples, taxa)
+    clr_df, _ = diff.load_clr(clr_path, samples)
+    presence = gr.presence_from_edges(bipartite[0], len(samples), len(taxa))
+    sx, names = gr.sample_node_features(pd.read_parquet(interim / "sample_depth.parquet"), samples)
+    graph = gr.build_hetero_graph(
+        "G1", samples, projects=[s.split("_")[0] for s in samples], taxonomy=taxonomy,
+        bipartite=bipartite, sample_x=sx, sample_feature_names=names, taxa_cols=taxa,
+        leaf_stats=gr.taxon_leaf_stats(clr_df.loc[samples, taxa].to_numpy(), presence))
+    graph = gnn.scale_sample_features(graph, np.arange(len(samples)))
+    return graph, samples, len(every) - len(samples)
 
 
 def _g1_builder(d):
@@ -155,12 +192,17 @@ def run_job(root, params, category, model, seed, threads=None, data=None):
             prob, _ = gnn.predict(net, DataLoader([ds[i] for i in te], batch_size=512))
             return prob
 
-    elif model in ("sage_g1", "gat_g1"):
+    elif model in ("sage_g1", "gat_g1") or model in PRETRAINED_MODELS:
+        make_model = _graph_model(gcfg, "gat_g1" if model == "gat_g1" else "sage_g1")
+        if model in PRETRAINED_MODELS:
+            state = torch.load(Path(root) / PRETRAINED_ENCODER, weights_only=False)["encoder"]
+            fresh, frozen = make_model, PRETRAINED_MODELS[model]
+            make_model = lambda g: gnn.load_pretrained(fresh(g), state, frozen=frozen)  # noqa: E731
         cv = gnn.graph_disease_cv(
-            _g1_builder(d), _graph_model(gcfg, model), d["schemes"], y, d["projects"], seed,
+            _g1_builder(d), make_model, d["schemes"], y, d["projects"], seed,
             batch_size=tcfg["batch_size"], neighbor_sampling=gcfg["neighbor_sampling"],
             protocol="inductive", **train_kw)
-        n_params["n"] = graph_model_params(d, gcfg, model)
+        n_params["n"] = graph_model_params(d, gcfg, "gat_g1" if model == "gat_g1" else "sage_g1")
         run_fold = None
 
     elif model.startswith("mlp_"):
@@ -185,7 +227,8 @@ def run_job(root, params, category, model, seed, threads=None, data=None):
     if run_fold is not None:
         cv = gnn.binary_cv(run_fold, d["schemes"], y, d["projects"])
     return cv.assign(disease_category=category, model=model, framing=FRAMING[model],
-                     pretrained=False, seed=seed, n_params=n_params.get("n"))
+                     pretrained=model in PRETRAINED_MODELS, seed=seed,
+                     n_params=n_params.get("n"))
 
 
 def run_job_to_file(root, params, category, model, seed, run_dir, threads=None):
@@ -209,17 +252,22 @@ def run_job_to_file(root, params, category, model, seed, run_dir, threads=None):
 # control (matched MLP, shuffled tree), orange = graph model
 ROLE = {"logreg": "flat baseline", "gboost": "flat baseline", "mlp_gcn": "control",
         "mlp_sage": "control", "mlp_gat": "control", "gcn_shuffled": "control",
-        "gcn": "graph model", "sage_g1": "graph model", "gat_g1": "graph model"}
-ROLE_COLOR = {"flat baseline": "#2a78d6", "control": "#b5b4ae", "graph model": "#eb6834"}
+        "gcn": "graph model", "sage_g1": "graph model", "gat_g1": "graph model",
+        "sage_g1_pt_full": "pretrained graph model", "sage_g1_pt_frozen": "pretrained graph model"}
+ROLE_COLOR = {"flat baseline": "#2a78d6", "control": "#b5b4ae", "graph model": "#eb6834",
+              "pretrained graph model": "#9c3d12"}
 LABEL = {"logreg": "logistic regression", "gboost": "gradient boosting",
          "mlp_gcn": "MLP, GCN-sized", "gcn_shuffled": "GCN, shuffled tree",
          "gcn": "GCN, per-sample taxonomy", "mlp_sage": "MLP, SAGE-sized",
-         "sage_g1": "GraphSAGE, G1", "mlp_gat": "MLP, GAT-sized", "gat_g1": "GAT, G1"}
+         "sage_g1": "GraphSAGE, G1", "mlp_gat": "MLP, GAT-sized", "gat_g1": "GAT, G1",
+         "sage_g1_pt_full": "GraphSAGE, pretrained, fine-tuned",
+         "sage_g1_pt_frozen": "GraphSAGE, pretrained, frozen"}
 ORDER = ["logreg", "gboost", "mlp_gcn", "gcn_shuffled", "gcn", "mlp_sage", "sage_g1",
-         "mlp_gat", "gat_g1"]
+         "sage_g1_pt_full", "sage_g1_pt_frozen", "mlp_gat", "gat_g1"]
 
 
-def plot_disease_lopo(summary, ncols=3):
+def plot_disease_lopo(summary, ncols=3, title="Disease classification under honest evaluation: "
+                      "graph models vs flat models and controls"):
     """One panel per disease (`ncols` per row): a horizontal bar per model for
     the leave-one-project-out AUC (mean over folds and seeds, +/- seed sd),
     and an open diamond at the random k-fold AUC of the same model -- the
@@ -262,13 +310,44 @@ def plot_disease_lopo(summary, ncols=3):
     for row in axes:
         row[0].set_yticks(range(len(models)))
         row[0].set_yticklabels([LABEL[m] for m in models[::-1]])
+    roles = {ROLE[m] for m in models}
     handles = [Patch(color=c, label=f"{r}: leave-one-project-out AUC")
-               for r, c in ROLE_COLOR.items()]
+               for r, c in ROLE_COLOR.items() if r in roles]
     handles += [plt.Line2D([], [], marker="D", mfc="none", mec="#0b0b0b", ls="",
                            label="random k-fold AUC (studies shared)"),
                 plt.Line2D([], [], color="#52514e", ls="--", label="chance")]
     fig.legend(handles=handles, loc="lower center", ncol=3, fontsize=8, frameon=False)
-    fig.suptitle("Disease classification under honest evaluation: graph models vs flat models "
-                 "and controls", fontweight="bold")
+    fig.suptitle(title, fontweight="bold")
     fig.tight_layout(rect=(0, 0.6 / fig.get_figheight() + 0.04, 1, 1))
+    return fig
+
+
+def plot_pretrain_history(history, baselines):
+    """Left: reconstruction loss per epoch, on the training samples' hidden
+    edges and on the held-out evaluation edges. Right: held-out existence
+    AUC against the sample-blind baseline (a taxon's prevalence)."""
+    import matplotlib.pyplot as plt
+
+    var._style()
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 3.8))
+    ax1.plot(history["epoch"], history["train_loss"], color="#eb6834", marker="o", ms=3,
+             label="training samples")
+    ax1.plot(history["epoch"], history["eval_loss"], color="#9c3d12", marker="o", ms=3,
+             ls="--", label="held-out samples")
+    ax1.set_xlabel("epoch")
+    ax1.set_ylabel("reconstruction loss (MSE + BCE)")
+    ax1.set_title("Loss", loc="left")
+    ax1.legend(frameon=False, fontsize=8)
+
+    ax2.plot(history["epoch"], history["eval_exist_auc"], color="#9c3d12", marker="o", ms=3,
+             label="pretrained encoder")
+    ax2.axhline(baselines["exist_auc_prevalence"], color="#2a78d6", ls="--", lw=1.2,
+                label="taxon prevalence alone")
+    ax2.set_xlabel("epoch")
+    ax2.set_ylabel("AUC, hidden edge vs absent pair")
+    ax2.set_title("Held-out edge existence", loc="left")
+    ax2.legend(frameon=False, fontsize=8, loc="lower right")
+    fig.suptitle("Pretraining by masked edge reconstruction, unlabelled samples only",
+                 fontweight="bold")
+    fig.tight_layout()
     return fig
