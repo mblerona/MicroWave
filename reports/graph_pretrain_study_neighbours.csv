@@ -1,0 +1,5 @@
+,same-study share of 10 neighbours
+CLR composition,0.3001
+"encoder, random weights",0.23856
+"encoder, pretrained",0.25456
+chance,0.011199199839967994

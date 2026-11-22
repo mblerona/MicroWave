@@ -1,0 +1,3 @@
+,pretrained encoder,sample-blind baseline,encoder better
+existence AUC (higher is better),0.9265209034697948,0.8684171937061407,True
+weight MSE (lower is better),1.6237103939056396,2.4897220134735107,True

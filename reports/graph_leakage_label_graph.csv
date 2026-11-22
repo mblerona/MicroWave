@@ -1,0 +1,3 @@
+cv_scheme,G2 from labels (inductive),G2 from composition (inductive)
+leave_project_out,1.0,0.6833498447918714
+random_kfold,1.0,0.7940372284727123
