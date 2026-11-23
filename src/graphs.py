@@ -510,3 +510,268 @@ def build_per_sample_dataset(clr_df, taxonomy, labels=None, *, presence, log10_p
             g.y = torch.tensor([int(y[i])])
         graphs.append(g)
     return graphs
+
+
+# ---------------------------------------------------------------------------
+# Report
+# ---------------------------------------------------------------------------
+
+def _f(x, fmt=".3f"):
+    return "—" if x is None or pd.isna(x) else format(x, fmt)
+
+
+def _pm(mean, sd, fmt=".3f"):
+    return _f(mean, fmt) if sd is None or pd.isna(sd) else f"{_f(mean, fmt)} ± {_f(sd, '.3f')}"
+
+
+def _md_table(header, rows):
+    out = ["| " + " | ".join(header) + " |", "|" + "---|" * len(header)]
+    out += ["| " + " | ".join(str(c) for c in r) + " |" for r in rows]
+    return out
+
+
+def _noise_verdict(delta, sd, up="win", down="loss"):
+    return up if delta > sd else (down if delta < -sd else "within fold noise")
+
+
+def graph_report_md(*, project_cv, committed_project_cv, leakage_gap, label_agreement,
+                    flip_test, label_graph, disease_cv, disease_summary, pretrain_summary,
+                    pretrain_reconstruction, pretrain_study, pretrain_history):
+    """Human-readable companion to the graph-model CSVs: every graph result
+    beside the baseline it is judged against, limitations first, verdicts read
+    against the noise bars stated before the runs (fold-to-fold sd, or 2x the
+    seed sd for the leakage and tree gaps). Inputs are the frames the graph
+    notebooks write; disease AUCs are means over folds, then over seeds."""
+    from src import graph_disease as gd
+
+    lopo, rand = "leave_project_out", "random_kfold"
+    summ = pd.concat([disease_summary, pretrain_summary], ignore_index=True)
+    s = summ.set_index(["disease_category", "model", "cv_scheme"])
+    cats = list(dict.fromkeys(disease_summary["disease_category"]))
+    n_studies = (disease_cv[disease_cv["cv_scheme"] == lopo]
+                 .groupby("disease_category")["test_project"].nunique())
+    lopo_sd = s.xs(lopo, level="cv_scheme")["fold_sd"].dropna()
+    recon = pretrain_reconstruction.set_index(pretrain_reconstruction.columns[0])
+    study = pretrain_study.set_index(pretrain_study.columns[0]).iloc[:, 0]
+    flip = flip_test.set_index(flip_test.columns[0])
+    label_graph = label_graph.set_index(label_graph.columns[0])
+
+    lines = ["# Graph models: relational extension", "",
+             "Graph neural networks over the same 419 genus-level CLR features as the flat "
+             "pipeline, judged under the same leave-one-project-out (LOPO) evaluation, on the "
+             "same folds. Disease AUCs are averaged over folds, then over three model seeds "
+             "(42, 43, 44); `±` is the seed-to-seed sd unless a column says otherwise. LOPO is "
+             "the number that counts; random k-fold shares studies between training and test "
+             "and is shown only to measure how much that flatters a model.", ""]
+
+    # ---- limitations -------------------------------------------------------
+    lines += ["## Limitations, read these first", "",
+              "- **Few studies per disease.** LOPO has one fold per study: "
+              + ", ".join(f"{c} {n_studies.get(c, 0)}" for c in cats)
+              + f". The fold-to-fold sd of a LOPO AUC is therefore large ({lopo_sd.min():.2f}"
+              f"–{lopo_sd.max():.2f}), and most differences below sit inside it. A difference "
+              "that is consistent across seeds is not one that would survive a different set "
+              "of studies.",
+              "- **Seed sd measures model randomness only.** Folds are fixed (built from seed "
+              "42), so the seed sd says nothing about which studies happen to be in the data. "
+              "The pretrained encoder is a single run (seed 42); its downstream seed sd "
+              "excludes pretraining randomness.",
+              "- **The flat gradient-boosting baseline was re-run, not read from the committed "
+              "file.** Logistic regression reproduces `classifier_cv.csv` exactly; gradient "
+              "boosting moves individual folds by up to ~0.035 AUC (means within fold noise). "
+              "The cause is not identified. Disease tables use the re-run so that every model "
+              "shares one environment.",
+              "- **No tuning.** Every neural model uses one fixed configuration (60 epochs, no "
+              "early stopping, one learning rate) set before the runs. A tuned model of any "
+              "kind could score higher; this compares like with like, not best achievable.",
+              "- **Three diseases have no defensible signal.** Phase 5 found nothing for T1D, "
+              "asthma and cancer_other, and several of their LOPO AUCs are below 0.5. They are "
+              "kept for completeness; a graph model \"finding something\" there is a reason "
+              "for suspicion, not a result.",
+              "- **Scope.** Genus-level 16S profiles only; only GraphSAGE was pretrained; the "
+              "study identity in the pretraining neighbour check is the accession prefix of "
+              "the sample key.", ""]
+
+    # ---- verdicts used by the headline and the sections --------------------
+    win_rows, n_win = [], {"win": 0, "within fold noise": 0, "loss": 0}
+    for cat in cats:
+        for model, mlp in (("gcn", "mlp_gcn"), ("sage_g1", "mlp_sage"), ("gat_g1", "mlp_gat")):
+            rivals = {m: s.loc[(cat, m, lopo), "auc_mean"] for m in ("logreg", "gboost", mlp)}
+            best = max(rivals, key=rivals.get)
+            auc, sd = s.loc[(cat, model, lopo), "auc_mean"], s.loc[(cat, model, lopo), "fold_sd"]
+            verdict = _noise_verdict(auc - rivals[best], sd)
+            n_win[verdict] += 1
+            win_rows.append([cat, gd.LABEL[model], _f(auc), gd.LABEL[best], _f(rivals[best]),
+                             f"{auc - rivals[best]:+.3f}", _f(sd), verdict])
+    pt_rows, n_pt = [], {"helps": 0, "within fold noise": 0, "hurts": 0}
+    for cat in cats:
+        ref = s.loc[(cat, "sage_g1", lopo)]
+        for m in gd.PRETRAINED_MODELS:
+            row = s.loc[(cat, m, lopo)]
+            delta = row["auc_mean"] - ref["auc_mean"]
+            verdict = _noise_verdict(delta, ref["fold_sd"], "helps", "hurts")
+            n_pt[verdict] += 1
+            pt_rows.append([cat, gd.LABEL[m], _pm(ref["auc_mean"], ref["auc_seed_sd"]),
+                            _pm(row["auc_mean"], row["auc_seed_sd"]), f"{delta:+.3f}",
+                            _f(ref["fold_sd"]), verdict])
+    proj = project_cv.groupby("model")["accuracy"].mean()
+    outside = int((leakage_gap["graph_leakage_gap"].abs()
+                   > 2 * leakage_gap["graph_leakage_gap_seed_sd"]).sum())
+
+    lines += ["## Answers in one table", ""]
+    lines += _md_table(
+        ["question", "answer", "evidence"],
+        [["Does a graph model encode the study as well as a flat one? (calibration)",
+          "yes, a tie",
+          f"study accuracy {proj['GraphSAGE on G1']:.3f} (GraphSAGE, G1) vs "
+          f"{proj['linear']:.3f} (linear, CLR)"],
+         ["Does a sample-similarity graph leak the study into a disease model?",
+          "no, under all three protocols",
+          f"G2 − G1 within ±{leakage_gap['graph_leakage_gap'].abs().max():.3f}; {outside} of "
+          f"{len(leakage_gap)} gaps beyond 2× seed sd, about what chance gives"],
+         ["Can a graph leak at all?", "yes, if it is built from labels",
+          f"G2 with label-built edges: AUC {label_graph.iloc[:, 0].min():.2f} even inductively"],
+         ["Does a graph model beat the flat models on honest splits?", "no",
+          f"{n_win['win']} wins, {n_win['within fold noise']} within fold noise, "
+          f"{n_win['loss']} losses ({len(win_rows)} graph model × disease tests)"],
+         ["Does label-free pretraining on the unlabelled samples help?",
+          "small gains, mostly inside fold noise",
+          f"{n_pt['helps']} helps, {n_pt['within fold noise']} within fold noise, "
+          f"{n_pt['hurts']} hurts ({len(pt_rows)} tests); it lifts GraphSAGE to the flat "
+          "models' level, not past them"],
+         ["Did pretraining teach the encoder study identity?", "no more than the data has",
+          f"same-study share of 10 neighbours {study['encoder, pretrained']:.3f} vs "
+          f"{study['CLR composition']:.3f} in CLR space (chance {study['chance']:.3f})"]])
+    lines.append("")
+
+    # ---- experiment A ------------------------------------------------------
+    committed = committed_project_cv.groupby("model")["accuracy"].mean()
+    lines += ["## Experiment A — calibration: predicting the study", "",
+              "A graph model must at least see what a flat model sees. Task: which study a "
+              "sample came from (5 folds, the committed project-prediction folds). The "
+              "committed flat models are shown beside their re-run. G3 contains study nodes, "
+              "so it is a ceiling, not a model.", ""]
+    rows = []
+    for model, g in project_cv.groupby("model", sort=False):
+        rows.append([model, g["inputs"].iloc[0], g["role"].iloc[0],
+                     _pm(g["accuracy"].mean(), g["accuracy"].std()),
+                     _f(g["balanced_accuracy"].mean()), _f(g["top5_accuracy"].mean()),
+                     _f(committed.get(model)), _f(g["n_params"].iloc[0], ",.0f")])
+    lines += _md_table(["model", "inputs", "role", "accuracy (± fold sd)", "balanced acc.",
+                        "top-5", "committed accuracy", "parameters"], rows)
+    lines += ["", f"Majority-class accuracy: {project_cv['majority_baseline'].iloc[0]:.3f}.", ""]
+
+    # ---- experiment C ------------------------------------------------------
+    pct = leakage_gap.drop_duplicates("disease_category")
+    lines += ["## Experiment C — does a graph leak the study into a disease model?", "",
+              "The same GraphSAGE on four graphs: G1 (samples, taxa, taxonomy), G2 (+ 10 "
+              "nearest-neighbour sample edges), G2 filtered (same-study neighbour edges "
+              "removed), G3 (+ study nodes). Three protocols, strict to leaky: **inductive** "
+              "(held-out samples only receive messages), **transductive** (they also send), "
+              "**transductive_labels** (training labels are an input feature). A gap counts if "
+              "it is beyond 2× its seed sd.", "",
+              "**The mechanism exists:** share of a sample's 10 nearest neighbours (CLR, "
+              "Aitchison) from its own study: "
+              + ", ".join(f"{r.disease_category} {r.pct_same_project_neighbours:.0%}"
+                          for r in pct.itertuples()) + ".", ""]
+    lines += _md_table(
+        ["protocol", "disease", "split", "G1 AUC", "G2 − G1", "G2 filtered − G1", "G3 − G1",
+         "flat logreg", "flat gboost"],
+        [[r.protocol, r.disease_category, r.cv_scheme.replace("_", " "), _f(r.auc_G1),
+          _pm(r.graph_leakage_gap, r.graph_leakage_gap_seed_sd, "+.3f"),
+          _pm(r.gap_G2_filtered, r.gap_G2_filtered_seed_sd, "+.3f"),
+          _pm(r.gap_G3, r.gap_G3_seed_sd, "+.3f"), _f(r.flat_auc_logreg),
+          _f(r.flat_auc_gboost)] for r in leakage_gap.itertuples(index=False)])
+    lines += ["", "**Why there is no leak, in three checks:**", "",
+              "1. Neighbours' labels say no more than the study's case rate: label agreement "
+              "between k-NN neighbours sits at the same-study chance level.", ""]
+    lines += _md_table(
+        ["disease", "k-NN label agreement", "chance (random)", "chance (random, same study)"],
+        [[r.disease_category, _f(r.knn_label_agreement), _f(r.chance_random),
+          _f(r.chance_same_study)] for r in label_agreement.itertuples(index=False)])
+    lines += ["", "2. The labels-as-input model ignores the label channel: scored with the "
+              "neighbours' labels true, flipped or withheld (IBD, random k-fold, seed 42), its "
+              "AUC barely moves.", ""]
+    lines += _md_table(["graph", "labels true", "labels flipped", "labels withheld"],
+                       [[g, _f(r["true"]), _f(r["flipped"]), _f(r["withheld"])]
+                        for g, r in flip.iterrows()])
+    lines += ["", "3. What a real leak looks like: G2 with its sample edges built from the "
+              "labels (IBD), trained under the strict inductive protocol. The protocol guards "
+              "against leaks through messages, not against a graph whose construction used "
+              "the labels.", ""]
+    lines += _md_table(["split", *label_graph.columns],
+                       [[i.replace("_", " "), *(_f(v) for v in r)]
+                        for i, r in label_graph.iterrows()])
+    lines.append("")
+
+    # ---- experiment B ------------------------------------------------------
+    order = [m for m in gd.ORDER if m in set(disease_summary["model"])]
+    lines += ["## Experiment B — disease classification", "",
+              "The flat baselines (logistic regression, gradient boosting), a GCN on one "
+              "taxonomy tree per sample, the same GCN on a shuffled tree, GraphSAGE and GAT on "
+              "G1 (inductive), and an MLP size-matched to each graph model.", ""]
+    for scheme, title in ((lopo, "### LOPO AUC"),
+                          (rand, "### Random k-fold AUC (studies shared; for the inflation only)")):
+        lines += [title, ""]
+        lines += _md_table(["disease", *(gd.LABEL[m] for m in order)],
+                           [[c, *(_f(s.loc[(c, m, scheme), "auc_mean"])
+                                  if (c, m, scheme) in s.index else "—" for m in order)]
+                            for c in cats])
+        lines.append("")
+    lines += ["### The pre-stated test", "",
+              "A graph model wins only if its LOPO AUC beats the best of logistic regression, "
+              "gradient boosting and its own size-matched MLP by more than its fold-to-fold "
+              "sd.", ""]
+    lines += _md_table(["disease", "graph model", "LOPO AUC", "best rival", "rival AUC",
+                        "margin", "fold sd", "verdict"], win_rows)
+
+    per_seed = (disease_cv[disease_cv["model"].isin(["gcn", "gcn_shuffled"])]
+                .groupby(["disease_category", "cv_scheme", "seed", "model"])["auc"].mean()
+                .unstack("model"))
+    tree = ((per_seed["gcn"] - per_seed["gcn_shuffled"])
+            .groupby(["disease_category", "cv_scheme"]).agg(["mean", "std"]))
+    lines += ["", "### Does the real taxonomy matter?", "",
+              "GCN on the real tree minus GCN on a shuffled tree of the same shape (a different "
+              "random tree per seed), paired by seed; counted if beyond 2× its seed sd.", ""]
+    rows = []
+    for (c, scheme), r in tree.iterrows():
+        reading = ("real tree better" if r["mean"] > 2 * r["std"] else
+                   "shuffled tree better" if r["mean"] < -2 * r["std"] else "within seed noise")
+        rows.append([c, scheme.replace("_", " "), _pm(r["mean"], r["std"], "+.3f"), reading])
+    lines += _md_table(["disease", "split", "real − shuffled", "reading"], rows)
+    lines.append("")
+
+    # ---- pretraining -------------------------------------------------------
+    last = pretrain_history.iloc[-1]
+    lines += ["## Pretraining — what the unlabelled samples add", "",
+              "GraphSAGE pretrained without labels by masked edge reconstruction on every "
+              "QC-passed sample outside the disease cohorts, so no sample later tested on was "
+              f"seen; {int(last['epoch'])} epochs. Then fine-tuned whole, or frozen (only the "
+              "final layer learns), and compared with the random-start GraphSAGE of Experiment "
+              "B on the same folds and seeds.", "",
+              "**Reconstruction on held-out samples' hidden edges**, against a baseline that "
+              "ignores the sample (a taxon's prevalence; its mean weight):", ""]
+    lines += _md_table(["measure", *recon.columns],
+                       [[i, *(("yes" if v else "no") if isinstance(v, (bool, np.bool_))
+                              else _f(v) for v in r)] for i, r in recon.iterrows()])
+    lines += ["", "**Study identity:** share of a sample's 10 nearest neighbours from its own "
+              "study (5,000 pretraining samples).", ""]
+    lines += _md_table(["space", "same-study share"], [[i, _f(v)] for i, v in study.items()])
+    lines += ["", "**Disease, LOPO:** pretrained minus random start, counted if beyond the "
+              "random-start model's fold-to-fold sd.", ""]
+    lines += _md_table(["disease", "variant", "random start", "pretrained", "Δ", "fold sd",
+                        "verdict"], pt_rows)
+    flattery = ("logreg", "gboost", "sage_g1", *gd.PRETRAINED_MODELS)
+    lines += ["", "**Random k-fold minus LOPO** (how much a shared-study split flatters each "
+              "model):", ""]
+    lines += _md_table(["disease", *(gd.LABEL[m] for m in flattery)],
+                       [[c, *(_f(s.loc[(c, m, rand), "auc_mean"] - s.loc[(c, m, lopo), "auc_mean"],
+                                 "+.3f") for m in flattery)] for c in cats])
+
+    lines += ["", "## Figures", "",
+              "- `figures/phase7_project_compare.png` — Experiment A",
+              "- `figures/phase7_leakage_gap.png` — Experiment C",
+              "- `figures/phase7_disease_lopo.png` — Experiment B",
+              "- `figures/phase7_pretrain_curve.png`, `figures/phase7_pretrain_lopo.png` — "
+              "pretraining"]
+    return "\n".join(lines) + "\n"

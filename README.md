@@ -79,6 +79,13 @@ them in order; every phase reads the previous phase's output.
 | 5 | `05_differential.ipynb` | `src/differential.py` | `abund_clr.parquet`, cohorts | `reports/differential_{per_project,meta,pooled}.csv`, `reports/concordance.csv`, `reports/classifier_cv.csv`, `reports/differential_report.md`, `reports/figures/phase5_*.png` |
 | 6 | `06_validation.ipynb` | `src/validation.py` | Phase 5 artifacts + cohorts | `reports/validation_*.csv`, `reports/literature_crosscheck.csv`, `reports/final_report.md`, `reports/figures/phase6_*.png` |
 | — | `06b_experiment.ipynb` | `src/variance.py` | `abund_clr.parquet` + harmonized metadata | `reports/experiment_heldout_guesses.csv`, `reports/figures/experiment_project_guessing.png` |
+| 7 | `07_graph_build.ipynb` | `src/graphs.py` | transforms + `taxon_table.parquet` + cohorts | builds and checks the graphs (taxonomy tree, sample–taxon edges, k-NN and study nodes, per-sample trees); nothing written |
+| 7 | `08_gnn_models.ipynb` | `src/gnn.py` | as 07 | model sanity: every graph model and control memorises a small subset |
+| 7 | `09_graph_project.ipynb` | `src/gnn.py` | as 07 + `project_classifier_cv.csv` | `reports/graph_project_cv.csv`, `reports/figures/phase7_project_compare.png` |
+| 7 | `10_graph_disease.ipynb` | `src/graph_disease.py` | as 07 + `classifier_cv.csv` | `reports/graph_disease_{cv,summary}.csv`, `reports/figures/phase7_disease_lopo.png` |
+| 7 | `11_graph_leakage.ipynb` | `src/gnn.py` | as 07 + `classifier_cv.csv` | `reports/graph_leakage_*.csv`, `reports/figures/phase7_leakage_gap.png` |
+| 7 | `12_graph_pretrain.ipynb` | `src/gnn.py`, `src/graph_disease.py` | as 07 + `10_graph_disease` runs | `data/processed/gae_encoder.pt`, `reports/graph_pretrain_*.csv`, `reports/figures/phase7_pretrain_*.png` |
+| 7 | `13_graph_report.ipynb` | `src/graphs.py` | the graph CSVs above | `reports/graph_report.md` |
 
 `06b_experiment.ipynb` is optional and standalone — it re-runs just the Phase 4
 "guess the study of origin from one sample's composition" classifier (linear +
@@ -133,6 +140,12 @@ Execute `00_ingest` → `00b_explore` → `00c_eda` → `01_harmonize` → `02_c
 its outputs to `data/` and `reports/` and asserts its own sanity checks. The run
 is deterministic (`config/params.yaml` → `seed: 42`).
 
+The graph extension (Phase 7) then runs `07_graph_build` → `08_gnn_models` →
+`09_graph_project` → `11_graph_leakage` → `10_graph_disease` → `12_graph_pretrain` →
+`13_graph_report`. It needs `torch_geometric` and takes about a day on a laptop CPU
+from scratch, mostly the per-sample GCNs in `10_graph_disease`. Notebooks 10–12 keep one
+file per finished run and skip it on a re-run, so an interrupted run resumes.
+
 ## Outputs
 
 All committed under [`reports/`](reports/):
@@ -151,7 +164,12 @@ All committed under [`reports/`](reports/):
 | `classifier_cv.csv` | 5 | disease-classifier AUC, leave-one-project-out vs random k-fold |
 | `validation_*.csv` | 6 | label-shuffling null, depth / transform / prevalence sensitivity |
 | `literature_crosscheck.csv` | 6 | replicated hits vs curated genus-direction priors (orientation only) |
-| `figures/eda_*.png`, `phase4_*.png`, `phase5_*.png`, `phase6_*.png` | — | all figures |
+| `graph_report.md` | 7 | **graph extension** — limitations, every graph result beside its flat baseline |
+| `graph_project_cv.csv` | 7 | study prediction: GraphSAGE vs the flat models (calibration) |
+| `graph_leakage_{cv,gap}.csv` + check CSVs | 7 | does a graph leak the study into a disease model; 4 graphs × 3 protocols |
+| `graph_disease_{cv,summary}.csv` | 7 | disease AUC of the graph models, size-matched MLPs and shuffled-tree control |
+| `graph_pretrain_*.csv` | 7 | label-free pretraining: training history, reconstruction, study check, disease AUC |
+| `figures/eda_*.png`, `phase4_*.png` … `phase7_*.png` | — | all figures |
 
 ## Configuration
 
